@@ -30,6 +30,22 @@ numpy_array = df.values
 # Das Numpy-Array enthält die Werte aus dem DataFrame
 print(numpy_array)
 
-#np.save('Uf48.bin.dat', numpy_array)
-with open('1GramBooks_TEST.tsv', 'wb') as file:
+
+numpy_array = df.values
+
+# Das Numpy-Array enthält die Werte aus dem DataFrame
+print(numpy_array)
+
+converted_array = np.empty(numpy_array.shape)
+for idx, row in enumerate(numpy_array):
+    for jdx, val in enumerate(row):
+        try:
+            converted_array[idx, jdx] = float(val)
+        except (ValueError, TypeError):
+            converted_array[idx, jdx] = val
+
+np.savetxt('1grams_TEST.tsv', converted_array, delimiter='\t', fmt='%s')
+
+
+with open('Uf48.bin.dat', 'wb') as file:
     pickle.dump(numpy_array, file)
