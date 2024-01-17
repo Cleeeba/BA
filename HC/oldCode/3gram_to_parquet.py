@@ -4,6 +4,7 @@ monotonically_increasing_id, map_from_arrays, lit, udf,collect_list, row_number,
 from pyspark.sql.types import ShortType, ArrayType, LongType, StringType
 from pyspark.sql import types as T
 
+from pyspark.conf import SparkConf
 import pandas as pd
 
 #path = 'C:/Users/bincl/BA-Thesis/Dataset/2gram/2_20000_nopos_ab.gz'
@@ -11,8 +12,9 @@ start_date = 1800
 end_date = 2000
 path = '/mnt/c/Users/bincl/BA-Thesis/Dataset/3gram/default/3_20000_nopos_sample/3_20000_nopos_sample.gz'
 
+conf= SparkConf().setAll([('spark.executor.memory', '16g'), ('spark.executor.cores', '4'), ('spark.cores.max', '4'), ('spark.driver.memory','16g')])
 
-spark = SparkSession.builder.appName('3gramSQL').getOrCreate()
+spark = SparkSession.builder.config(conf=conf).appName('3gramSQL').getOrCreate()
 
 raw_input_df = spark \
                 .read.csv(path, sep='\n',quote="").withColumnRenamed('_c0', 'Input')
