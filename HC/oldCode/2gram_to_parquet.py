@@ -18,8 +18,6 @@ spark = SparkSession.builder.appName('3gramSQL').getOrCreate()
 for filename in os.listdir(directory):
         f = os.path.join(directory, filename)
         # checking if it is a file
-        if os.path.isfile(f):
-            print(f)
         raw_input_df = spark \
                 .read.csv(f, sep='\n',quote="").withColumnRenamed('_c0', 'Input')
 
