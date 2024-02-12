@@ -3,7 +3,8 @@ import pyspark.pandas as ps
 
 spark = SparkSession.builder.appName('CorpusLoader').master('local[*]')\
 .config('spark.driver.memory','100G') \
-    .config("spark.local.dir", "/mnt/simhomes/binzc/sparktemp")\
+    .config("spark.local.dir", "/mnt/simhomes/binzc/sparktemp") \
+    .config("spark.sql.adaptive.optimizeSkewedJoin.enabled", "true") \
     .getOrCreate()
 import os
 import seaborn as sns
@@ -119,12 +120,13 @@ class CorpusLoader:
 cl = CorpusLoader('/mnt/simhomes/binzc/data_transfer', spark)
 
 cl.load()
+'''
+# Limit für kleinere Sample size
+token_array_df = cl._CorpusLoader__contains_df.limit(700000)
 
-
-token_array_df = cl._CorpusLoader__contains_df.orderBy('NgramId', 'Position').groupBy('NgramId').agg(collect_list('TokenId').alias('Tokens'))
+# Baue NgramId mit child tabelle
+token_array_df = token_array_df.orderBy('NgramId', 'Position').groupBy('NgramId').agg(collect_list('TokenId').alias('Tokens'))
 df = token_array_df.withColumnRenamed('Tokens', 'Ngram').withColumn('Length', size('Ngram')).where('Length > 1')
-#df.cache()
-
 df = df.withColumn('LeftChildTokenIds', slice(df.Ngram, 1, df.Length - 1))
 df = df.withColumn('RightChildTokenIds', slice(df.Ngram, 2,df.Length - 1))
 
@@ -134,23 +136,21 @@ table = result.join(token_array_df.withColumnRenamed('NgramId', 'RightChildNgram
 
 result = table.select("NgramId","LeftChildNgramId","RightChildNgramId")
 
+# Frequency Table without 0
 from pyspark.sql.functions import col
-#1000 limit is 3m 30
 result = result.join(cl._CorpusLoader__data_df, on=("NgramId")).withColumnRenamed("Frequency","Frequency_N").alias("og")
 result = result.join(cl._CorpusLoader__data_df.alias("dataL"),(col("og.LeftChildNgramId") == col("dataL.NgramId"))).withColumnRenamed("Frequency","Frequency_L")
 ngram_table = result.join(cl._CorpusLoader__data_df.alias("dataR"),(col("og.LeftChildNgramId") == col("dataR.NgramId"))).withColumnRenamed("Frequency","Frequency_R")
 ngram_table = ngram_table.select(col("og.NgramId").alias("NgramId"),"Frequency_N", "Frequency_L",col("dataL.NgramId").alias("NgramIdL"), "Frequency_R",col("dataR.NgramId").alias("NgramIdR"))
 ngram_table.printSchema()
-
+'''
+#ngram_table.write.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq", mode= 'overwrite'))
 #ngram_table = spark.read.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq")
-#ngram_table = spark.read.parquet("/mnt/simhomes/binzc/data_transfer/freq_small")
-#ngram_table.printSchema()
+ngram_table = spark.read.parquet("/mnt/simhomes/binzc/data_transfer/freq_small")
+ngram_table.coalesce(32)
 
-
+#Frequency Table with 0
 year_df = spark.createDataFrame(list(range(1800, 2001)), schema=IntegerType())
-#year_df = spark.range(1800, 2001).toDF("id").withColumn("Year", col("id").cast(IntegerType())).select("Year")
-#year_df = spark.createDataFrame(list(range(1800, 2001)), schema=IntegerType())
-
 df = ngram_table.crossJoin(year_df).withColumnRenamed('value', 'Year')
 #df.printSchema()
 
@@ -166,6 +166,8 @@ df.printSchema()
 df_1 = df.select("NgramId","Frequency_N", "Year","Frequency_L","Frequency_R" )
 
 
+
+#UDF für MLR
 import pandas as pd
 import statsmodels.api as sm
 from pyspark.sql.types import *
@@ -259,7 +261,9 @@ rmse_stats = (rmse_df.groupBy("NgramId")
 final=sum_df.join(rmse_stats, on="NgramId").join(ZScore_N_df,on="NgramId").join(ZScore_df,on="NgramId")
 final= final.select("NgramId","Sum","rmse","ZScore_N_Array","ZScoreArray")
 #final.show()
-final.write.parquet("/mnt/simhomes/binzc/data_transfer/final_df" , mode= 'overwrite')
+
+#final.write.parquet("/mnt/simhomes/binzc/data_transfer/final_df" , mode= 'overwrite')
+
 
 line_plot = final.select("ZScore_N_Array", "ZScoreArray").first()
 years = list(range(1800, 2001))
@@ -271,7 +275,6 @@ pandas_df = pd.DataFrame({
 plt.plot(years, pandas_df['ZScore_N_Array'], label='ZScore_N_Array')
 plt.plot(years, pandas_df['ZScoreArray'], label='ZScoreArray')
 
-# Achsentitel und Diagrammüberschrift hinzufügen
 plt.xlabel('Years')
 plt.ylabel('Values')
 plt.title('Line Plot of ZScore_N_Array and ZScoreArray over Years')
@@ -285,6 +288,7 @@ pandas_df = violin.toPandas()
 
 sns.violinplot(x=pandas_df["rmse"], inner_kws=dict(box_width=15, whis_width=2, color=".8"))
 plt.savefig("/mnt/simhomes/binzc/png/violin_plot.png")
+plt.clf()
 
 sum_plot = final.select("Sum","rmse")
 pandas_df = sum_plot.toPandas()
