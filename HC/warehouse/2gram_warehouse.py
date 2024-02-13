@@ -1,3 +1,4 @@
+from pyspark import StorageLevel
 from pyspark.sql import SparkSession
 import pyspark.pandas as ps
 
@@ -120,9 +121,10 @@ class CorpusLoader:
 cl = CorpusLoader('/mnt/simhomes/binzc/data_transfer', spark)
 
 cl.load()
-'''
+#'''as
 # Limit für kleinere Sample size
-token_array_df = cl._CorpusLoader__contains_df.limit(700000)
+token_array_df = cl._CorpusLoader__contains_df
+#token_array_df = cl._CorpusLoader__contains_df.limit(50000)
 
 # Baue NgramId mit child tabelle
 token_array_df = token_array_df.orderBy('NgramId', 'Position').groupBy('NgramId').agg(collect_list('TokenId').alias('Tokens'))
@@ -142,11 +144,13 @@ result = result.join(cl._CorpusLoader__data_df, on=("NgramId")).withColumnRename
 result = result.join(cl._CorpusLoader__data_df.alias("dataL"),(col("og.LeftChildNgramId") == col("dataL.NgramId"))).withColumnRenamed("Frequency","Frequency_L")
 ngram_table = result.join(cl._CorpusLoader__data_df.alias("dataR"),(col("og.LeftChildNgramId") == col("dataR.NgramId"))).withColumnRenamed("Frequency","Frequency_R")
 ngram_table = ngram_table.select(col("og.NgramId").alias("NgramId"),"Frequency_N", "Frequency_L",col("dataL.NgramId").alias("NgramIdL"), "Frequency_R",col("dataR.NgramId").alias("NgramIdR"))
+#ngram_table = ngram_table.limit(10000)
 ngram_table.printSchema()
-'''
+#'''
+
 #ngram_table.write.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq", mode= 'overwrite'))
 #ngram_table = spark.read.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq")
-ngram_table = spark.read.parquet("/mnt/simhomes/binzc/data_transfer/freq_small")
+#ngram_table = spark.read.parquet("/mnt/simhomes/binzc/data_transfer/freq_small")
 ngram_table.coalesce(32)
 
 #Frequency Table with 0
@@ -205,6 +209,7 @@ result_df = result_df.withColumn("R_multi", expr("transform(Frequency_R, x -> x 
 
 full_df = result_df.withColumn("Aprox", expr("transform(L_multi, (x, i) -> x + R_multi[i])"))
 result_df_zwischen = full_df.select("NgramId","Aprox","L_multi","R_multi")
+full_df.coalesce(32)
 #result_df_zwischen.show()
 
 from pyspark.sql.functions import stddev_pop, avg, col , explode
@@ -259,7 +264,8 @@ rmse_stats = (rmse_df.groupBy("NgramId")
 #rmse_stats.show()
 
 final=sum_df.join(rmse_stats, on="NgramId").join(ZScore_N_df,on="NgramId").join(ZScore_df,on="NgramId")
-final= final.select("NgramId","Sum","rmse","ZScore_N_Array","ZScoreArray")
+final= final.select("NgramId","Sum","rmse","ZScore_N_Array","ZScoreArray").persist(StorageLevel.MEMORY_AND_DISK)
+
 #final.show()
 
 #final.write.parquet("/mnt/simhomes/binzc/data_transfer/final_df" , mode= 'overwrite')
@@ -302,6 +308,7 @@ plt.title("Scatter Plot mit logarithmischer Skala auf der x-Achse")
 plt.savefig("/mnt/simhomes/binzc/png/scatter_plot.png")
 plt.clf()
 
+final.write.parquet("/mnt/simhomes/binzc/data_transfer/final_df" , mode= 'overwrite')
 
 
 #beta.write.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/param" , mode= 'overwrite')
