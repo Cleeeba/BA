@@ -1,0 +1,10 @@
+== Physical Plan ==
+AdaptiveSparkPlan isFinalPlan=false
++- Project [NgramId#16L, CASE WHEN isnotnull(Frequency_N#17[value#109]) THEN Frequency_N#17[value#109] ELSE 0 END AS Frequency_N#134L, CASE WHEN isnotnull(Frequency_L#18[value#109]) THEN Frequency_L#18[value#109] ELSE 0 END AS Frequency_L#152L, CASE WHEN isnotnull(Frequency_R#19[value#109]) THEN Frequency_R#19[value#109] ELSE 0 END AS Frequency_R#170L, value#109 AS Year#116]
+   +- BroadcastNestedLoopJoin BuildLeft, Cross
+      :- BroadcastExchange IdentityBroadcastMode, [plan_id=170]
+      :  +- GlobalLimit 10, 0
+      :     +- Exchange SinglePartition, ENSURE_REQUIREMENTS, [plan_id=167]
+      :        +- LocalLimit 10
+      :           +- FileScan parquet [NgramId#16L,Frequency_N#17,Frequency_L#18,Frequency_R#19] Batched: true, DataFilters: [], Format: Parquet, Location: InMemoryFileIndex(1 paths)[file:/mnt/simhomes/binzc/data_transfer/freq_small], PartitionFilters: [], PushedFilters: [], ReadSchema: struct<NgramId:bigint,Frequency_N:map<int,bigint>,Frequency_L:map<int,bigint>,Frequency_R:map<int...
+      +- Scan ExistingRDD[value#109]

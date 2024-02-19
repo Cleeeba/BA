@@ -1,22 +1,35 @@
+from itertools import chain
 from pyspark import StorageLevel
 from pyspark.sql import SparkSession
 import pyspark.pandas as ps
+#UDF für MLR
+import pandas as pd
+import statsmodels.api as sm
+from pyspark.sql.types import *
 
 spark = SparkSession.builder.appName('CorpusLoader').master('local[*]')\
 .config('spark.driver.memory','100G') \
-    .config("spark.local.dir", "/mnt/simhomes/binzc/sparktemp") \
+    .config("spark.sql.mapKeyDedupPolicy","LAST_WIN") \
     .config("spark.sql.adaptive.optimizeSkewedJoin.enabled", "true") \
     .getOrCreate()
+    #.config("spark.local.dir", "/mnt/simhomes/binzc/sparktemp") \
+
 import os
 import seaborn as sns
 from pyspark.sql.types import IntegerType
-from pyspark.sql.functions import map_entries, explode, when, col, lit, collect_list
-from pyspark.ml.feature import VectorAssembler
-from pyspark.sql import Row
-
+from pyspark.sql.functions import col
 from matplotlib import pyplot as plt
-from pyspark.sql.functions import split, element_at, explode, map_values, array_min, broadcast, map_from_entries, arrays_zip, array_contains, monotonically_increasing_id, array_distinct, transform, arrays_zip, size, slice, collect_list, first, map_from_arrays
-from pyspark.sql.types import LongType, ArrayType, IntegerType, MapType
+from pyspark.sql.functions import split, element_at, map_concat,create_map, map_from_entries, when, col, lit, collect_list,expr, arrays_zip, monotonically_increasing_id, transform, arrays_zip, size, slice, collect_list, stddev_pop, avg, col , explode, col, sqrt, pow
+from pyspark.sql.types import LongType, IntegerType
+
+year_list = list(range(1800, 2001))
+dict_years = list(chain.from_iterable(zip([lit(year) for year in year_list], [lit(0) for i in year_list])))
+group_column = 'NgramId'
+intercept = "ic"
+y_column = 'Frequency_N'
+x_columns = ['Frequency_L', 'Frequency_R']
+schema = StructType([StructField('NgramId', LongType(), True), StructField('Frequency_L', DoubleType(), False), StructField('Frequency_R', DoubleType(), False),StructField('ic',  DoubleType(), True)])
+
 
 class CorpusLoader:
 
@@ -121,72 +134,73 @@ class CorpusLoader:
 cl = CorpusLoader('/mnt/simhomes/binzc/data_transfer', spark)
 
 cl.load()
-#'''as
-# Limit für kleinere Sample size
-token_array_df = cl._CorpusLoader__contains_df
-#token_array_df = cl._CorpusLoader__contains_df.limit(50000)
 
-# Baue NgramId mit child tabelle
-token_array_df = token_array_df.orderBy('NgramId', 'Position').groupBy('NgramId').agg(collect_list('TokenId').alias('Tokens'))
-df = token_array_df.withColumnRenamed('Tokens', 'Ngram').withColumn('Length', size('Ngram')).where('Length > 1')
-df = df.withColumn('LeftChildTokenIds', slice(df.Ngram, 1, df.Length - 1))
-df = df.withColumn('RightChildTokenIds', slice(df.Ngram, 2,df.Length - 1))
+# Ngram to child Table
+def load_ngramTable():
+    token_array_df = cl._CorpusLoader__contains_df
+    #token_array_df = cl._CorpusLoader__contains_df.limit(50000)
 
-result = df.join(token_array_df.withColumnRenamed('NgramId', 'LeftChildNgramId'), on=df.LeftChildTokenIds == token_array_df.Tokens).withColumnRenamed('Tokens', 'LCTokens')
+    # Baue NgramId mit child tabelle
+    token_array_df = token_array_df.orderBy('NgramId', 'Position').groupBy('NgramId').agg(collect_list('TokenId').alias('Tokens'))
+    df = token_array_df.withColumnRenamed('Tokens', 'Ngram').withColumn('Length', size('Ngram')).where('Length > 1')
+    df = df.withColumn('LeftChildTokenIds', slice(df.Ngram, 1, df.Length - 1))
+    df = df.withColumn('RightChildTokenIds', slice(df.Ngram, 2,df.Length - 1))
 
-table = result.join(token_array_df.withColumnRenamed('NgramId', 'RightChildNgramId'), on=df.RightChildTokenIds == token_array_df.Tokens).withColumnRenamed('Tokens', 'RCTokens')
+    result = (df
+            .join(token_array_df.withColumnRenamed('NgramId', 'LeftChildNgramId'), on= df.LeftChildTokenIds == token_array_df.Tokens).withColumnRenamed('Tokens', 'LCTokens')
+            .join(token_array_df.withColumnRenamed('NgramId', 'RightChildNgramId'), on= df.RightChildTokenIds == token_array_df.Tokens).withColumnRenamed('Tokens', 'RCTokens')
+            .select("NgramId", "LeftChildNgramId", "RightChildNgramId"))
+    # Frequency Table without 0
 
-result = table.select("NgramId","LeftChildNgramId","RightChildNgramId")
-
-# Frequency Table without 0
-from pyspark.sql.functions import col
-result = result.join(cl._CorpusLoader__data_df, on=("NgramId")).withColumnRenamed("Frequency","Frequency_N").alias("og")
-result = result.join(cl._CorpusLoader__data_df.alias("dataL"),(col("og.LeftChildNgramId") == col("dataL.NgramId"))).withColumnRenamed("Frequency","Frequency_L")
-ngram_table = result.join(cl._CorpusLoader__data_df.alias("dataR"),(col("og.LeftChildNgramId") == col("dataR.NgramId"))).withColumnRenamed("Frequency","Frequency_R")
-ngram_table = ngram_table.select(col("og.NgramId").alias("NgramId"),"Frequency_N", "Frequency_L",col("dataL.NgramId").alias("NgramIdL"), "Frequency_R",col("dataR.NgramId").alias("NgramIdR"))
-#ngram_table = ngram_table.limit(10000)
-ngram_table.printSchema()
-#'''
-
-#ngram_table.write.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq", mode= 'overwrite'))
-#ngram_table = spark.read.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq")
-#ngram_table = spark.read.parquet("/mnt/simhomes/binzc/data_transfer/freq_small")
-ngram_table.coalesce(32)
-
-#Frequency Table with 0
-year_df = spark.createDataFrame(list(range(1800, 2001)), schema=IntegerType())
-df = ngram_table.crossJoin(year_df).withColumnRenamed('value', 'Year')
-#df.printSchema()
+    ngram_table = (result
+                .join(cl._CorpusLoader__data_df, on=("NgramId")).withColumnRenamed("Frequency","Frequency_N").alias("og")
+                .join(cl._CorpusLoader__data_df.alias("dataL"),(col("og.LeftChildNgramId") == col("dataL.NgramId"))).withColumnRenamed("Frequency","Frequency_L")
+                .join(cl._CorpusLoader__data_df.alias("dataR"),(col("og.RightChildNgramId") == col("dataR.NgramId"))).withColumnRenamed("Frequency","Frequency_R")
+                .select(col("og.NgramId").alias("NgramId"),"Frequency_N", "Frequency_L",col("dataL.NgramId").alias("NgramIdL"), "Frequency_R",col("dataR.NgramId").alias("NgramIdR")))
+    return ngram_table
 
 
-df = df.withColumn("TrueFreq", when(col("Frequency_N").getItem(df.Year).isNotNull(),col("Frequency_N").getItem(df.Year)).otherwise(lit(0)))
-df = df.select("NgramId","TrueFreq", "Frequency_L", "Frequency_R",'Year').withColumnRenamed('TrueFreq', 'Frequency_N')
+def explode_and_filter(df, frequency_col, dict_years):
+    
+    new_col_name = f"new_{frequency_col}"
+    
+    result_df = df.withColumn(
+        new_col_name,
+        map_concat(
+            create_map(*dict_years),
+            frequency_col
+        )
+    ).select("NgramId", explode(new_col_name).alias("Year", "value")).filter((col("Year") >= 1800) & (col("Year") < 2001))
 
-df = df.withColumn("TrueFreq", when(col("Frequency_L").getItem(df.Year).isNotNull(),col("Frequency_L").getItem(df.Year)).otherwise(lit(0)))
-df = df.select("NgramId","Frequency_N", "TrueFreq", "Frequency_R" ,'Year').withColumnRenamed('TrueFreq', 'Frequency_L')
-df = df.withColumn("TrueFreq", when(col("Frequency_R").getItem(df.Year).isNotNull(),col("Frequency_R").getItem(df.Year)).otherwise(lit(0)))
-df = df.select("NgramId","Frequency_N", "Frequency_L", "TrueFreq", 'Year').withColumnRenamed('TrueFreq', 'Frequency_R')
-df.printSchema()
-df_1 = df.select("NgramId","Frequency_N", "Year","Frequency_L","Frequency_R" )
+    return result_df
+# Frequency Table with 0 entries
+def freq_df(ngram_table):
+    
+    df_N = explode_and_filter(ngram_table, "Frequency_N", dict_years)
+    df_L = explode_and_filter(ngram_table, "Frequency_L", dict_years)
+    df_R = explode_and_filter(ngram_table, "Frequency_R", dict_years)
+
+    df = df_N.withColumnRenamed("value","Frequency_N").join(df_L,["NgramId","Year"])\
+        .withColumnRenamed("value","Frequency_L").join(df_R,["NgramId","Year"])\
+        .withColumnRenamed("value","Frequency_R").orderBy(["NgramId","Year"])
+    return df
 
 
+def old_freq_df(ngram_table):
+    
+    year_df = spark.createDataFrame(list(range(1800, 2001)), schema=IntegerType())
+    df = ngram_table.crossJoin(year_df).withColumnRenamed('value', 'Year')
+    
+    df = df.withColumn("TrueFreq", when(col("Frequency_N").getItem(year_list).isNotNull(),col("Frequency_N").getItem(year_list)).otherwise(lit(0)))
+    df = df.select("NgramId","TrueFreq", "Frequency_L", "Frequency_R",'Year').withColumnRenamed('TrueFreq', 'Frequency_N')
 
-#UDF für MLR
-import pandas as pd
-import statsmodels.api as sm
-from pyspark.sql.types import *
-from pyspark.sql.functions import pandas_udf, PandasUDFType
+    df = df.withColumn("TrueFreq", when(col("Frequency_L").getItem(df.Year).isNotNull(),col("Frequency_L").getItem(df.Year)).otherwise(lit(0)))
+    df = df.select("NgramId","Frequency_N", "TrueFreq", "Frequency_R" ,'Year').withColumnRenamed('TrueFreq', 'Frequency_L')
+    df = df.withColumn("TrueFreq", when(col("Frequency_R").getItem(df.Year).isNotNull(),col("Frequency_R").getItem(df.Year)).otherwise(lit(0)))
+    df = df.select("NgramId","Frequency_N", "Frequency_L", "TrueFreq", 'Year').withColumnRenamed('TrueFreq', 'Frequency_R')
+    df_1 = df.select("NgramId","Frequency_N","Frequency_L","Frequency_R" )
+    return df_1
 
-group_column = 'NgramId'
-intercept = "ic"
-y_column = 'Frequency_N'
-x_columns = ['Frequency_L', 'Frequency_R']
-schema = StructType([StructField('NgramId', LongType(), True), StructField('Frequency_L', DoubleType(), False), StructField('Frequency_R', DoubleType(), False),StructField('ic',  DoubleType(), True)])
-#schema = df2.select(group_column, *x_columns).schema
-print(schema)
-
-@pandas_udf(schema, PandasUDFType.GROUPED_MAP)
-# Input/output are both a pandas.DataFrame
 def ols(pdf):
     group_key = pdf[group_column].iloc[0]
     y = pdf[y_column]
@@ -195,12 +209,119 @@ def ols(pdf):
     model = sm.OLS(y, X).fit()
     return pd.DataFrame([[group_key] + [model.params[i] for i in x_columns] + [model.params['const']]], columns=[group_column] + x_columns + [intercept])
 
-from pyspark.sql.functions import expr
+def build_aprox(df):
 
-beta = df_1.groupby(group_column).apply(ols)
+    beta = df.groupby(group_column).applyInPandas(ols,schema= schema)
+    beta.drop("Frequency_N")
+
+    beta = beta.withColumnRenamed("Frequency_L","Coef_L").withColumnRenamed("Frequency_R","Coef_R")
+    df_1= df.groupby(group_column).agg(collect_list("Frequency_N").alias("Frequency_N"),collect_list("Frequency_L").alias("Frequency_L"),collect_list("Frequency_R").alias("Frequency_R"))
+
+    df = beta.join(df_1, on= "NgramId")
+    result_df = df.withColumn("L_multi", expr("transform(Frequency_L, x -> x * Coef_L + ic)"))
+    result_df = result_df.withColumn("R_multi", expr("transform(Frequency_R, x -> x * Coef_R)"))
+
+
+    full_df = result_df.withColumn("Aprox", expr("transform(L_multi, (x, i) -> x + R_multi[i])"))
+    return full_df.select("NgramId","Aprox","L_multi","R_multi")
+
+def Zscore_calc(df):
+    result_df = df.select("NgramId","Aprox", explode("Aprox").alias("exploded_aprox"))
+
+    stats = (result_df.groupBy("NgramId")
+        .agg(
+            stddev_pop("exploded_aprox").alias("sd"), 
+            avg("exploded_aprox").alias("avg")))
+
+
+    result_df= result_df.join(stats, ["NgramId"]).select("NgramId",((result_df.exploded_aprox - stats.avg) / stats.sd).alias("ZScore"))
+    ZScore_df= result_df.groupBy("NgramId").agg(collect_list("ZScore").alias("ZScoreArray"))
+    #ZScore_df.show()
+    # Falls fehler dann hier approx Zscore sind zu nah aneinander--------------------- Brodcast entfernt muss getestet werden ob klappt
+    ZScore_N_df = df.select("NgramId","Frequency_N",explode("Frequency_N").alias("exploded_Frequency_N"))
+    stats = (ZScore_N_df.groupBy("NgramId")
+    .agg(
+        stddev_pop("exploded_Frequency_N").alias("sd"), 
+        avg("exploded_Frequency_N").alias("avg")))
+
+    ZScore_N_df= ZScore_N_df.join(stats, ["NgramId"]).select("NgramId","Frequency_N",((ZScore_N_df.exploded_Frequency_N - stats.avg) / stats.sd).alias("ZScore_N"))
+    ZScore_N_df= ZScore_N_df.groupBy("NgramId").agg(collect_list("ZScore_N").alias("ZScore_N_Array"))
+    
+    return ZScore_df,ZScore_N_df
+
+def Sum_calc(df):
+    sum_df = full_df.select(
+    "NgramId",'Frequency_N',
+    expr('AGGREGATE(Frequency_N, 0, (acc, x) -> CAST(acc AS INT) + CAST(x AS INT))').alias('Sum')
+    )
+    return sum_df
+
+
+def RMSE(ZScore_N_df,ZScore_df):
+
+    rmse_df = ZScore_N_df.join(ZScore_df, on="NgramId")
+
+    rmse_df = rmse_df.withColumn("zip", arrays_zip("ZScoreArray", "ZScore_N_Array"))\
+        .withColumn("zip", explode("zip"))\
+        .select("NgramId", col("zip.ZScoreArray").alias("ZScoreArray"), col("zip.ZScore_N_Array").alias("ZScore_N_Array"))
+
+    rmse_stats = (rmse_df.groupBy("NgramId")
+    .agg(
+        sqrt(avg(pow(col("ZScoreArray") - col("ZScore_N_Array"), 2))).alias("rmse")))
+    return rmse_stats
+
+def build_graph(final_df):
+    line_plot = final_df.select("ZScore_N_Array", "ZScoreArray").first()
+    years = list(range(1800, 2001))
+
+    pandas_df = pd.DataFrame({
+        'ZScore_N_Array': line_plot.ZScore_N_Array,
+        'ZScoreArray': line_plot.ZScoreArray})
+
+    plt.plot(years, pandas_df['ZScore_N_Array'], label='ZScore_N_Array')
+    plt.plot(years, pandas_df['ZScoreArray'], label='ZScoreArray')
+
+    plt.xlabel('Years')
+    plt.ylabel('Values')
+    plt.title('Line Plot of ZScore_N_Array and ZScoreArray over Years')
+    plt.legend()
+
+    plt.savefig("/mnt/simhomes/binzc/png/line_plot.png")
+    plt.clf()
+
+    violin = final_df.select("rmse")
+    pandas_df = violin.toPandas()
+
+    sns.violinplot(x=pandas_df["rmse"], inner_kws=dict(box_width=15, whis_width=2, color=".8"))
+    plt.savefig("/mnt/simhomes/binzc/png/violin_plot.png")
+    plt.clf()
+
+    sum_plot = final_df.select("Sum","rmse")
+    pandas_df = sum_plot.toPandas()
+    plt.scatter(x=pandas_df["Sum"], y=pandas_df["rmse"])
+    plt.xscale("log")
+
+    plt.xlabel("Sum")
+    plt.ylabel("RMSE")
+    plt.title("Scatter Plot mit logarithmischer Skala auf der x-Achse")
+
+    plt.savefig("/mnt/simhomes/binzc/png/scatter_plot.png")
+    plt.clf()
+
+#ngram_table.write.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq", mode= 'overwrite'))
+#ngram_table = spark.read.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq").limit(10)
+ngram_table = spark.read.parquet("/mnt/simhomes/binzc/data_transfer/freq_small").limit(10)
+ngram_table.show()
+#ngram_table             = load_ngramTable()
+freq_table              = freq_df(ngram_table)
+df = freq_table
+freq_table.show()
+
+beta = df.groupby(group_column).applyInPandas(ols,schema= schema)
 beta.drop("Frequency_N")
+
 beta = beta.withColumnRenamed("Frequency_L","Coef_L").withColumnRenamed("Frequency_R","Coef_R")
-df_1= df_1.groupby(group_column).agg(collect_list("Frequency_N").alias("Frequency_N"),collect_list("Frequency_L").alias("Frequency_L"),collect_list("Frequency_R").alias("Frequency_R"))
+df_1= df.groupby(group_column).agg(collect_list("Frequency_N").alias("Frequency_N"),collect_list("Frequency_L").alias("Frequency_L"),collect_list("Frequency_R").alias("Frequency_R"))
 
 df = beta.join(df_1, on= "NgramId")
 result_df = df.withColumn("L_multi", expr("transform(Frequency_L, x -> x * Coef_L + ic)"))
@@ -208,113 +329,23 @@ result_df = result_df.withColumn("R_multi", expr("transform(Frequency_R, x -> x 
 
 
 full_df = result_df.withColumn("Aprox", expr("transform(L_multi, (x, i) -> x + R_multi[i])"))
-result_df_zwischen = full_df.select("NgramId","Aprox","L_multi","R_multi")
-full_df.coalesce(32)
-#result_df_zwischen.show()
+aprox_table =  full_df.select("NgramId","Aprox","L_multi","R_multi", "Frequency_N")
 
-from pyspark.sql.functions import stddev_pop, avg, col , explode
-#----------------------------------
-
-result_df = full_df.select("NgramId","Aprox", explode("Aprox").alias("exploded_aprox"))
-
-stats = (result_df.groupBy("NgramId")
-  .agg(
-      stddev_pop("exploded_aprox").alias("sd"), 
-      avg("exploded_aprox").alias("avg")))
-
-result_df= result_df.join(broadcast(stats), ["NgramId"]).select("NgramId",((result_df.exploded_aprox - stats.avg) / stats.sd).alias("ZScore"))
-ZScore_df= result_df.groupBy("NgramId").agg(collect_list("ZScore").alias("ZScoreArray"))
-#ZScore_df.show()
-# Falls fehler dann hier approx Zscore sind zu nah aneinander---------------------
-ZScore_N_df = full_df.select("NgramId","Frequency_N",explode("Frequency_N").alias("exploded_Frequency_N"))
-stats = (ZScore_N_df.groupBy("NgramId")
-  .agg(
-      stddev_pop("exploded_Frequency_N").alias("sd"), 
-      avg("exploded_Frequency_N").alias("avg")))
-
-ZScore_N_df= ZScore_N_df.join(broadcast(stats), ["NgramId"]).select("NgramId","Frequency_N",((ZScore_N_df.exploded_Frequency_N - stats.avg) / stats.sd).alias("ZScore_N"))
-ZScore_N_df= ZScore_N_df.groupBy("NgramId").agg(collect_list("ZScore_N").alias("ZScore_N_Array"))
-#ZScore_N_df.show()
-
-#----------------------------------
-#result_df.show()
-
-import pyspark.sql.functions as F
-sum_df = full_df.select(
-  "NgramId",'Frequency_N',
-  F.expr('AGGREGATE(Frequency_N, 0, (acc, x) -> CAST(acc AS INT) + CAST(x AS INT))').alias('Sum')
-)
-#sum_df.show()
-
-from pyspark.sql.functions import col, sqrt, pow
+aprox_table.show()
 
 
+sum_table               = Sum_calc(aprox_table)
+sum_table.show()
+ZScore_df, ZScore_N_df  = Zscore_calc(aprox_table)
+ZScore_df.show()
+ZScore_N_df.show()
+rmse_table              = RMSE(ZScore_N_df,ZScore_df)
+rmse_table.show()
+final  = sum_table.join(rmse_table, on="NgramId").join(ZScore_N_df,on="NgramId").join(ZScore_df,on="NgramId")
+final= final.select("NgramId","Sum","rmse","ZScore_N_Array","ZScoreArray")
 
-rmse_df = ZScore_N_df.join(ZScore_df, on="NgramId")
-
-rmse_df = rmse_df.withColumn("zip", arrays_zip("ZScoreArray", "ZScore_N_Array"))\
-    .withColumn("zip", explode("zip"))\
-    .select("NgramId", col("zip.ZScoreArray").alias("ZScoreArray"), col("zip.ZScore_N_Array").alias("ZScore_N_Array"))
-
-rmse_stats = (rmse_df.groupBy("NgramId")
-  .agg(
-      sqrt(avg(pow(col("ZScoreArray") - col("ZScore_N_Array"), 2))).alias("rmse")))
-
-
-#rmse_stats.show()
-
-final=sum_df.join(rmse_stats, on="NgramId").join(ZScore_N_df,on="NgramId").join(ZScore_df,on="NgramId")
-final= final.select("NgramId","Sum","rmse","ZScore_N_Array","ZScoreArray").persist(StorageLevel.MEMORY_AND_DISK)
-
-#final.show()
-
-#final.write.parquet("/mnt/simhomes/binzc/data_transfer/final_df" , mode= 'overwrite')
-
-
-line_plot = final.select("ZScore_N_Array", "ZScoreArray").first()
-years = list(range(1800, 2001))
-
-pandas_df = pd.DataFrame({
-    'ZScore_N_Array': line_plot.ZScore_N_Array,
-    'ZScoreArray': line_plot.ZScoreArray})
-
-plt.plot(years, pandas_df['ZScore_N_Array'], label='ZScore_N_Array')
-plt.plot(years, pandas_df['ZScoreArray'], label='ZScoreArray')
-
-plt.xlabel('Years')
-plt.ylabel('Values')
-plt.title('Line Plot of ZScore_N_Array and ZScoreArray over Years')
-plt.legend()
-
-plt.savefig("/mnt/simhomes/binzc/png/line_plot.png")
-plt.clf()
-
-violin = final.select("rmse")
-pandas_df = violin.toPandas()
-
-sns.violinplot(x=pandas_df["rmse"], inner_kws=dict(box_width=15, whis_width=2, color=".8"))
-plt.savefig("/mnt/simhomes/binzc/png/violin_plot.png")
-plt.clf()
-
-sum_plot = final.select("Sum","rmse")
-pandas_df = sum_plot.toPandas()
-plt.scatter(x=pandas_df["Sum"], y=pandas_df["rmse"])
-plt.xscale("log")
-
-plt.xlabel("Sum")
-plt.ylabel("RMSE")
-plt.title("Scatter Plot mit logarithmischer Skala auf der x-Achse")
-
-plt.savefig("/mnt/simhomes/binzc/png/scatter_plot.png")
-plt.clf()
-
+final.coalesce(32)
+build_graph(final)
 final.write.parquet("/mnt/simhomes/binzc/data_transfer/final_df" , mode= 'overwrite')
-
-
-#beta.write.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/param" , mode= 'overwrite')
-
-#df = df.select(("NgramId","Frequency_N", "Frequency_L" ,"Frequency_R", "Year"))
-#df.write.parquet("/mnt/simhomes/binzc/parquets_corpus/warehouse/freq" , mode= 'overwrite')
-
 
 
