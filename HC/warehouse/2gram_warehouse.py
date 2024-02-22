@@ -2,7 +2,6 @@ from itertools import chain
 from pyspark import StorageLevel
 from pyspark.sql import SparkSession
 import pyspark.pandas as ps
-#UDF für MLR
 import pandas as pd
 import statsmodels.api as sm
 from pyspark.sql.types import *
@@ -11,8 +10,9 @@ spark = SparkSession.builder.appName('CorpusLoader').master('local[*]')\
 .config('spark.driver.memory','100G') \
     .config("spark.sql.mapKeyDedupPolicy","LAST_WIN") \
     .config("spark.sql.adaptive.optimizeSkewedJoin.enabled", "true") \
+    .config("spark.local.dir", "/mnt/simhomes/binzc/sparktemp") \
     .getOrCreate()
-    #.config("spark.local.dir", "/mnt/simhomes/binzc/sparktemp") \
+    
 
 import os
 import seaborn as sns
@@ -137,8 +137,8 @@ cl.load()
 
 # Ngram to child Table
 def load_ngramTable():
-    token_array_df = cl._CorpusLoader__contains_df
-    #token_array_df = cl._CorpusLoader__contains_df.limit(50000)
+    #token_array_df = cl._CorpusLoader__contains_df
+    token_array_df = cl._CorpusLoader__contains_df.limit(50000)
 
     # Baue NgramId mit child tabelle
     token_array_df = token_array_df.orderBy('NgramId', 'Position').groupBy('NgramId').agg(collect_list('TokenId').alias('Tokens'))
@@ -174,7 +174,8 @@ def explode_and_filter(df, frequency_col, dict_years):
 
     return result_df
 # Frequency Table with 0 entries
-def freq_df(ngram_table):
+#sehr slow
+def new_freq_df(ngram_table):
     
     df_N = explode_and_filter(ngram_table, "Frequency_N", dict_years)
     df_L = explode_and_filter(ngram_table, "Frequency_L", dict_years)
@@ -186,12 +187,12 @@ def freq_df(ngram_table):
     return df
 
 
-def old_freq_df(ngram_table):
+def freq_df(ngram_table):
     
     year_df = spark.createDataFrame(list(range(1800, 2001)), schema=IntegerType())
     df = ngram_table.crossJoin(year_df).withColumnRenamed('value', 'Year')
     
-    df = df.withColumn("TrueFreq", when(col("Frequency_N").getItem(year_list).isNotNull(),col("Frequency_N").getItem(year_list)).otherwise(lit(0)))
+    df = df.withColumn("TrueFreq", when(col("Frequency_N").getItem(df.Year).isNotNull(),col("Frequency_N").getItem(df.Year)).otherwise(lit(0)))
     df = df.select("NgramId","TrueFreq", "Frequency_L", "Frequency_R",'Year').withColumnRenamed('TrueFreq', 'Frequency_N')
 
     df = df.withColumn("TrueFreq", when(col("Frequency_L").getItem(df.Year).isNotNull(),col("Frequency_L").getItem(df.Year)).otherwise(lit(0)))
@@ -249,13 +250,13 @@ def Zscore_calc(df):
     
     return ZScore_df,ZScore_N_df
 
-def Sum_calc(df):
-    sum_df = full_df.select(
+#sehr langsam
+def old_Sum_calc(df):
+    sum_df = df.select(
     "NgramId",'Frequency_N',
     expr('AGGREGATE(Frequency_N, 0, (acc, x) -> CAST(acc AS INT) + CAST(x AS INT))').alias('Sum')
     )
     return sum_df
-
 
 def RMSE(ZScore_N_df,ZScore_df):
 
@@ -310,15 +311,37 @@ def build_graph(final_df):
 
 #ngram_table.write.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq", mode= 'overwrite'))
 #ngram_table = spark.read.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq").limit(10)
-ngram_table = spark.read.parquet("/mnt/simhomes/binzc/data_transfer/freq_small").limit(10)
+#ngram_table = spark.read.parquet("/mnt/simhomes/binzc/data_transfer/freq_small").limit(10)
+import time
+start1 = time.time()
+ngram_table             = load_ngramTable()
+ngram_table.persist(StorageLevel.MEMORY_AND_DISK)
 ngram_table.show()
-#ngram_table             = load_ngramTable()
+print(time.time() - start1)
+print("readin time")
+start = time.time()
+
 freq_table              = freq_df(ngram_table)
-df = freq_table
 freq_table.show()
 
+print(time.time() - start)
+print("freq time")
+df = freq_table.repartition(128, col(group_column))
+
+start_sum_new = time.time()
+sum_table = df.groupby(group_column).sum(y_column).select(group_column,"sum(Frequency_N)").withColumnRenamed("sum(Frequency_N)", "Sum")
+sum_table.show()
+print(time.time()- start_sum_new)
+print("sum time")
+
+start_aprox = time.time()
 beta = df.groupby(group_column).applyInPandas(ols,schema= schema)
 beta.drop("Frequency_N")
+beta.show()
+print(time.time()- start_aprox)
+print("mlr time")
+start_build = time.time()
+
 
 beta = beta.withColumnRenamed("Frequency_L","Coef_L").withColumnRenamed("Frequency_R","Coef_R")
 df_1= df.groupby(group_column).agg(collect_list("Frequency_N").alias("Frequency_N"),collect_list("Frequency_L").alias("Frequency_L"),collect_list("Frequency_R").alias("Frequency_R"))
@@ -332,20 +355,27 @@ full_df = result_df.withColumn("Aprox", expr("transform(L_multi, (x, i) -> x + R
 aprox_table =  full_df.select("NgramId","Aprox","L_multi","R_multi", "Frequency_N")
 
 aprox_table.show()
+print(time.time()- start_build)
+print("build time")
+ngram_table.unpersist()
+aprox_table = aprox_table.repartition(128).persist(StorageLevel.MEMORY_AND_DISK)
 
-
-sum_table               = Sum_calc(aprox_table)
-sum_table.show()
+start_Z = time.time()
 ZScore_df, ZScore_N_df  = Zscore_calc(aprox_table)
 ZScore_df.show()
 ZScore_N_df.show()
+print(time.time()- start_Z)
+print("z time")
+
+start_rmse = time.time()
 rmse_table              = RMSE(ZScore_N_df,ZScore_df)
 rmse_table.show()
+print(time.time()- start_rmse)
+print("rmse time")
+
 final  = sum_table.join(rmse_table, on="NgramId").join(ZScore_N_df,on="NgramId").join(ZScore_df,on="NgramId")
 final= final.select("NgramId","Sum","rmse","ZScore_N_Array","ZScoreArray")
 
-final.coalesce(32)
+#final.write.parquet("/mnt/simhomes/binzc/data_transfer/final_df" , mode= 'overwrite')
 build_graph(final)
-final.write.parquet("/mnt/simhomes/binzc/data_transfer/final_df" , mode= 'overwrite')
-
 
