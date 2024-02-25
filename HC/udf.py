@@ -40,11 +40,44 @@ def ols(pdf):
     model = sm.OLS(y, X).fit()
     return pd.DataFrame([[group_key] + [model.params[i] for i in x_columns]], columns=[group_column] + x_columns)
 
-df2.show()
-beta = df2.groupby(group_column).apply(ols)
-print(beta.count())
+#df2.show()
+#beta = df2.groupby(group_column).apply(ols)
+#print(beta.count())
 
-while(True):
-    pass
+data = [("A", 10, 3),
+        ("A", 15, 2),
+        ("B", 5, 1),
+        ("B", 8, 2),
+        ("B", 12, 1)]
+
+data_c = [("A", 2, 1, 7),
+        ("B", 3, 2, 6),]
+
+columns = ["NgramId", "Frequency_L", "Frequency_R"]
+columns_c = ["NgramId", "Coef_L", "Coef_R", "ic"]
+
+beta = spark.createDataFrame(data, columns)
+df = spark.createDataFrame(data_c, columns_c)
+
+from pyspark.sql.window import Window
+from pyspark.sql.functions import first
+
+df = beta.join(df, on = "NgramId")
+df.printSchema()
+window_spec = Window.partitionBy('NgramId')
+transformed_df = df.withColumn(
+    'L_multi',
+    col('Frequency_L') * first('Coef_L').over(window_spec) + first('ic').over(window_spec)
+)
+result_df = transformed_df.withColumn(
+    'R_multi',
+    col('Frequency_R') * first('Coef_R').over(window_spec)
+)
+aprox_table = result_df.withColumn(
+    'Aprox',
+    col('L_multi') + col('R_multi')
+)
+
+aprox_table.show()
 
 #beta.write.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/test" , mode= 'overwrite')

@@ -142,13 +142,13 @@ cl.load()
 # Ngram to child Table
 def load_ngramTable():
     #token_array_df = cl._CorpusLoader__contains_df
-    token_array_df = cl._CorpusLoader__contains_df.limit(70000)
+    token_array_df = cl._CorpusLoader__contains_df.repartition(6 * 128, col(group_column))
     data_parquet = cl._CorpusLoader__data_df.repartition(6 * 128, col(group_column))
     # Baue NgramId mit child tabelle
     token_array_df = token_array_df.orderBy('NgramId', 'Position').groupBy('NgramId').agg(collect_list('TokenId').alias('Tokens'))
     df = token_array_df.withColumnRenamed('Tokens', 'Ngram').withColumn('Length', size('Ngram')).where('Length > 1')
     df = df.withColumn('LeftChildTokenIds', slice(df.Ngram, 1, df.Length - 1))
-    df = df.withColumn('RightChildTokenIds', slice(df.Ngram, 2,df.Length - 1)).repartition(6 * 128, col(group_column))
+    df = df.withColumn('RightChildTokenIds', slice(df.Ngram, 2,df.Length - 1)).coalesce(5*128)
     
     result = (df
             .join(token_array_df.withColumnRenamed('NgramId', 'LeftChildNgramId'), on= df.LeftChildTokenIds == token_array_df.Tokens).withColumnRenamed('Tokens', 'LCTokens')
@@ -312,35 +312,20 @@ import time
 start1 = time.time()
 #ngram_table = spark.read.parquet("/mnt/simhomes/binzc/data_transfer/freq_small")
 ngram_table             = load_ngramTable()
-ngram_table.persist()
-ngram_table.show()
-print(time.time() - start1)
-print("readin time")
-start = time.time()
+#ngram_table.persist()
 
 freq_table              = freq_df(ngram_table)
-freq_table.show()
 
-print(time.time() - start)
-print("freq zeit")
+
 #df = freq_table
 
-#df = freq_table.coalesce(4*128)
-df = freq_table.repartition(4 * 128, col(group_column))
-
-start_sum_new = time.time()
+df = freq_table.coalesce(4*128)
+#df = freq_table.repartition(4 * 128, col(group_column))
 
 sum_table = df.select(group_column,"Frequency_N").groupby(group_column).sum(y_column).select(group_column,"sum(Frequency_N)").withColumnRenamed("sum(Frequency_N)", "Sum")
-sum_table.show()
-print(time.time()- start_sum_new)
-print("sum zeit")
 
-start_aprox = time.time()
 beta = df.groupby(group_column).applyInPandas(ols,schema= schema)
 beta.drop("Frequency_N")
-beta.show()
-print(time.time()- start_aprox)
-print("mlr zeit")
 
 
 from pyspark.sql.window import Window
@@ -363,31 +348,21 @@ aprox_table = result_df.withColumn(
     col('L_multi') + col('R_multi')
 )
 aprox_table = aprox_table.groupby(group_column).agg(collect_list("Frequency_N").alias("Frequency_N"),collect_list("Aprox").alias("Aprox"))
+aprox_table = aprox_table.coalesce(3*128)#.persist()
 
-aprox_table.show()
-aprox_table = aprox_table.coalesce(3*128).persist()
-
-print(time.time()- start_build)
-print("build time")
 
 
 
 start_Z = time.time()
 ZScore_df, ZScore_N_df  = Zscore_calc(aprox_table)
-ZScore_df.show()
-ZScore_N_df.show()
-print(time.time()- start_Z)
-print("z time")
 
 start_rmse = time.time()
 rmse_table              = RMSE(ZScore_N_df,ZScore_df)
-rmse_table.show()
-print(time.time()- start_rmse)
-print("rmse time")
-
 final  = sum_table.join(rmse_table, on="NgramId").join(ZScore_N_df,on="NgramId").join(ZScore_df,on="NgramId")
 final= final.select("NgramId","Sum","rmse","ZScore_N_Array","ZScoreArray")
 
-#final.coalesce(2*128).sortWithinPartitions("Sum").write.parquet("/mnt/simhomes/binzc/data_transfer/final_df" , mode= 'overwrite')
+final.coalesce(2*128).sortWithinPartitions("Sum").write.parquet("/mnt/simhomes/binzc/data_transfer/final_df" , mode= 'overwrite')
 build_graph(final)
+
+
 
