@@ -49,7 +49,7 @@ class CorpusLoader:
 
     def __load_or_create_parquet(self, name, create_function):
         parquet_path = os.path.join(os.path.join(self.__root_path, 'parquets'), name)
-        
+        print(parquet_path)
         if not os.path.exists(parquet_path):
             print(f'File "{name}" not found. \n\t -- Creating "{name}" ...')
             
@@ -135,7 +135,7 @@ class CorpusLoader:
         return data_df.withColumnsRenamed({'FrequencyMap': 'Frequency', 'BookFrequencyMap': 'BookFrequency'})
     
 #cl = CorpusLoader('/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/', spark)
-cl = CorpusLoader('/mnt/simhomes/binzc/data_transfer', spark)
+cl = CorpusLoader('/mnt/simhomes/binzc/', spark)
 
 cl.load()
 
@@ -224,7 +224,7 @@ def build_aprox(df, beta):
 
 
     full_df = result_df.withColumn("Aprox", expr("transform(L_multi, (x, i) -> x + R_multi[i])"))
-    return full_df.select("NgramId","Aprox","L_multi","R_multi")
+    return full_df.select("NgramId","Aprox", "Coef_R", "Coef_L","ic")
 
 def Zscore_calc(df):
     result_df = df.select("NgramId","Aprox", explode("Aprox").alias("exploded_aprox"))
@@ -250,12 +250,11 @@ def Zscore_calc(df):
     
     return ZScore_df,ZScore_N_df
 
-#sehr langsam
-def old_Sum_calc(df):
+
+def Sum_no_zero(df):
     sum_df = df.select(
-    "NgramId",'Frequency_N',
-    expr('AGGREGATE(Frequency_N, 0, (acc, x) -> CAST(acc AS INT) + CAST(x AS INT))').alias('Sum')
-    )
+    "NgramId",explode('Frequency_N').alias("key", "value")).groupBy("NgramId").sum("value")\
+        .select("NgramId","sum(value)").withColumnRenamed("sum(value)", "Sum")
     return sum_df
 
 def RMSE(ZScore_N_df,ZScore_df):
@@ -287,7 +286,7 @@ def build_graph(final_df):
     plt.title('Line Plot of ZScore_N_Array and ZScoreArray over Years')
     plt.legend()
 
-    plt.savefig("/mnt/simhomes/binzc/png/line_plot.png")
+    plt.savefig("/mnt/simhomes/binzc/png/full_small_line_plot.png")
     plt.clf()
 
     collect_plot = final_df.select("Sum","rmse").collect()
@@ -298,12 +297,12 @@ def build_graph(final_df):
     plt.xlabel("Sum")
     plt.ylabel("RMSE")
     plt.title("Scatter Plot mit logarithmischer Skala auf der x-Achse")
-
+    plt.savefig("/mnt/simhomes/binzc/png/full_small_scatter_plot.png")
+    plt.clf()
     sns.violinplot(x=pandas_df["rmse"], inner_kws=dict(box_width=15, whis_width=2, color=".8"))
-    plt.savefig("/mnt/simhomes/binzc/png/violin_plot.png")
+    plt.savefig("/mnt/simhomes/binzc/png/full_violin_plot.png")
     plt.clf()
-    plt.savefig("/mnt/simhomes/binzc/png/scatter_plot.png")
-    plt.clf()
+    
 
 #ngram_table.write.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq", mode= 'overwrite'))
 #ngram_table = spark.read.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq").limit(10)
@@ -313,17 +312,15 @@ start1 = time.time()
 #ngram_table = spark.read.parquet("/mnt/simhomes/binzc/data_transfer/freq_small")
 ngram_table             = load_ngramTable()
 #ngram_table.persist()
+sum_table = Sum_no_zero(ngram_table)
 
 freq_table              = freq_df(ngram_table)
 
 
 #df = freq_table
 
-df = freq_table.coalesce(4*128)
-#df = freq_table.repartition(4 * 128, col(group_column))
-
-sum_table = df.select(group_column,"Frequency_N").groupby(group_column).sum(y_column).select(group_column,"sum(Frequency_N)").withColumnRenamed("sum(Frequency_N)", "Sum")
-
+#df = freq_table.repartition(4*128, "NgarmId")
+df = freq_table.coalesce(4 * 128)
 beta = df.groupby(group_column).applyInPandas(ols,schema= schema)
 beta.drop("Frequency_N")
 
@@ -347,22 +344,28 @@ aprox_table = result_df.withColumn(
     'Aprox',
     col('L_multi') + col('R_multi')
 )
-aprox_table = aprox_table.groupby(group_column).agg(collect_list("Frequency_N").alias("Frequency_N"),collect_list("Aprox").alias("Aprox"))
-aprox_table = aprox_table.coalesce(3*128)#.persist()
+# hier schauen warum dopplungen
 
 
+group_column_multi = ["NgramId", "Coef_R", "Coef_L","ic"]
+aprox_group_table = aprox_table.groupBy(group_column_multi).agg(collect_list("Frequency_N").alias("Frequency_N"),collect_list("Aprox").alias("Aprox"))
+params_df = aprox_group_table.select("NgramId", "Coef_R", "Coef_L","ic")
+
+aprox_group_table = aprox_group_table.select("NgramId","Aprox","Frequency_N")
 
 
 start_Z = time.time()
-ZScore_df, ZScore_N_df  = Zscore_calc(aprox_table)
+ZScore_df, ZScore_N_df  = Zscore_calc(aprox_group_table)
 
 start_rmse = time.time()
 rmse_table              = RMSE(ZScore_N_df,ZScore_df)
-final  = sum_table.join(rmse_table, on="NgramId").join(ZScore_N_df,on="NgramId").join(ZScore_df,on="NgramId")
-final= final.select("NgramId","Sum","rmse","ZScore_N_Array","ZScoreArray")
+final  = sum_table.join(rmse_table, on="NgramId").join(ZScore_N_df,on="NgramId").join(ZScore_df,on="NgramId").join(params_df, on="NgramId")
+calc_df= final.select("NgramId","Sum","rmse","ZScore_N_Array","ZScoreArray")
 
-final.coalesce(2*128).sortWithinPartitions("Sum").write.parquet("/mnt/simhomes/binzc/data_transfer/final_df" , mode= 'overwrite')
-build_graph(final)
+write_df = final.select("NgramId","Sum","rmse","Coef_R", "Coef_L","ic")
+
+write_df.write.parquet("/mnt/simhomes/binzc/parquets/full_final_df" , mode= 'overwrite')
+build_graph(calc_df)
 
 
 

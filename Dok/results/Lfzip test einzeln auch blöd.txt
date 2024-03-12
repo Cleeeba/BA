@@ -1,0 +1,141 @@
+1
+---------------------------------------------
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/zscore_np_20k.bsc.tar compressed 10240 into 1100 in 0.018 seconds.
+j: 0
+maxerror_observed: 8.661498566829987e+37
+RMSE: 7.494149589510289e+36
+MAE: 9.301162035108035e+35
+Shape of time series: (1, 201)
+Size of compressed file: 1100 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/zscore_np_20k.bsc.recon.npy
+2
+---------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/simhomes/binzc/anaconda3/envs/lfzip_env/bin/lfzip-nlms", line 41, in <module>
+    data = data[i, :]
+           ~~~~^^^^^^
+IndexError: index 2 is out of bounds for axis 0 with size 1
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.bsc -a 0.5
+1
+---------------------------------------------
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/zscore_np_20k.bsc.tar compressed 10240 into 1108 in 0.018 seconds.
+j: 0
+maxerror_observed: 8.661498566829987e+37
+RMSE: 7.494149589510289e+36
+MAE: 9.301162035108035e+35
+Shape of time series: (1, 201)
+Size of compressed file: 1108 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/zscore_np_20k.bsc.recon.npy
+2
+---------------------------------------------
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/zscore_np_20k.bsc.tar compressed 10240 into 1238 in 0.029 seconds.
+j: 0
+maxerror_observed: 1.2164372117428649e+38
+RMSE: 1.0938663462863697e+37
+MAE: 1.382203789568187e+36
+Shape of time series: (1, 201)
+Size of compressed file: 1238 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/zscore_np_20k.bsc.recon.npy
+3
+---------------------------------------------
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/zscore_np_20k.bsc.tar compressed 10240 into 876 in 0.030 seconds.
+j: 0
+maxerror_observed: 3.1163050212397835e+38
+RMSE: 3.027307917027486e+37
+MAE: 3.0948503377064417e+36
+Shape of time series: (1, 201)
+Size of compressed file: 876 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/zscore_np_20k.bsc.recon.npy
+4
+---------------------------------------------
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/zscore_np_20k.bsc.tar compressed 10240 into 1194 in 0.024 seconds.
+j: 0
+/mnt/simhomes/binzc/anaconda3/envs/lfzip_env/bin/lfzip-nlms:147: RuntimeWarning: invalid value encountered in subtract
+  sub = np.subtract(data[j,:], reconstruction[j,:], where=~np.isnan(reconstruction[j, :]))
+maxerror_observed: 1.6720920903418936e+38
+RMSE: 1.4728222724575052e+37
+MAE: 1.4652726563489474e+36
+Shape of time series: (1, 201)
+Size of compressed file: 1194 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/zscore_np_20k.bsc.recon.npy
+5
+---------------------------------------------
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/zscore_np_20k.bsc.tar compressed 10240 into 736 in 0.020 seconds.
+j: 0
+maxerror_observed: 6.142018659984857e+37
+RMSE: 4.335773190239945e+36
+MAE: 3.1873982421021075e+35
+Shape of time series: (1, 201)
+Size of compressed file: 736 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/zscore_np_20k.bsc.recon.npy
+6
+---------------------------------------------
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/zscore_np_20k.bsc.tar compressed 10240 into 760 in 0.016 seconds.
+j: 0
+maxerror_observed: 2.304476730901861e+37
+RMSE: 1.8736728138770272e+36
+MAE: 2.1031885641744442e+35
+Shape of time series: (1, 201)
+Size of compressed file: 760 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/zscore_np_20k.bsc.recon.npy
+7
+---------------------------------------------
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/zscore_np_20k.bsc.tar compressed 10240 into 622 in 0.016 seconds.
+j: 0
+maxerror_observed: 9.178813973512065e+36
+RMSE: 6.5015628354059966e+35
+MAE: 5.337750918382322e+34
+Shape of time series: (1, 201)
+Size of compressed file: 622 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/zscore_np_20k.bsc.recon.npy
+8
+---------------------------------------------
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/zscore_np_20k.bsc.tar compressed 10240 into 712 in 0.027 seconds.
+j: 0
+maxerror_observed: 3.5743731009334546e+37
+RMSE: 2.5512002967917813e+36
+MAE: 2.0960281512378965e+35
+Shape of time series: (1, 201)
+Size of compressed file: 712 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/zscore_np_20k.bsc.recon.npy
+9
+---------------------------------------------
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/zscore_np_20k.bsc.tar compressed 10240 into 338 in 0.016 seconds.
+j: 0
+maxerror_observed: 7.731791670554895
+RMSE: 1.5387179906665591
+MAE: 0.9747565595202392
+Shape of time series: (1, 201)
+Size of compressed file: 338 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/zscore_np_20k.bsc.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$

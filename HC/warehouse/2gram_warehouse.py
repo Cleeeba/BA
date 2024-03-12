@@ -25,6 +25,7 @@ from pyspark.sql.functions import col
 from matplotlib import pyplot as plt
 from pyspark.sql.functions import split, element_at, map_concat,create_map, map_from_entries, when, col, lit, collect_list,expr, arrays_zip, monotonically_increasing_id, transform, arrays_zip, size, slice, collect_list, stddev_pop, avg, col , explode, col, sqrt, pow
 from pyspark.sql.types import LongType, IntegerType
+from pyspark.sql import functions as f
 
 year_list = list(range(1800, 2001))
 dict_years = list(chain.from_iterable(zip([lit(year) for year in year_list], [lit(0) for i in year_list])))
@@ -142,13 +143,13 @@ cl.load()
 # Ngram to child Table
 def load_ngramTable():
     #token_array_df = cl._CorpusLoader__contains_df
-    token_array_df = cl._CorpusLoader__contains_df.limit(70000)
-    data_parquet = cl._CorpusLoader__data_df.repartition(6 * 128, col(group_column))
+    token_array_df = cl._CorpusLoader__contains_df.limit(70000).repartition(7 * 128, col(group_column))
+    data_parquet = cl._CorpusLoader__data_df.repartition(7 * 128, col(group_column))
     # Baue NgramId mit child tabelle
     token_array_df = token_array_df.orderBy('NgramId', 'Position').groupBy('NgramId').agg(collect_list('TokenId').alias('Tokens'))
     df = token_array_df.withColumnRenamed('Tokens', 'Ngram').withColumn('Length', size('Ngram')).where('Length > 1')
     df = df.withColumn('LeftChildTokenIds', slice(df.Ngram, 1, df.Length - 1))
-    df = df.withColumn('RightChildTokenIds', slice(df.Ngram, 2,df.Length - 1)).repartition(6 * 128, col(group_column))
+    df = df.withColumn('RightChildTokenIds', slice(df.Ngram, 2,df.Length - 1)).coalesce(6*128)
     
     result = (df
             .join(token_array_df.withColumnRenamed('NgramId', 'LeftChildNgramId'), on= df.LeftChildTokenIds == token_array_df.Tokens).withColumnRenamed('Tokens', 'LCTokens')
@@ -258,6 +259,12 @@ def old_Sum_calc(df):
     )
     return sum_df
 
+def Sum_no_zero(df):
+    sum_df = df.select(
+    "NgramId",explode('Frequency_N').alias("key", "value")).groupBy("NgramId").sum("value")\
+        .select("NgramId","sum(value)").withColumnRenamed("sum(value)", "Sum")
+    return sum_df
+
 def RMSE(ZScore_N_df,ZScore_df):
 
     rmse_df = ZScore_N_df.join(ZScore_df, on="NgramId")
@@ -289,8 +296,16 @@ def build_graph(final_df):
 
     plt.savefig("/mnt/simhomes/binzc/png/line_plot.png")
     plt.clf()
-
+    
+    start_rmse = time.time()
+    collect_plot = final_df.select("Sum","rmse").toPandas()
+    print(time.time()- start_rmse)
+    print("pandas time muss < 15 min")
+    
+    start_rmse = time.time()
     collect_plot = final_df.select("Sum","rmse").collect()
+    print(time.time()- start_rmse)
+    print("collect time muss < 15 min")
     pandas_df = pd.DataFrame(collect_plot, columns=["Sum", "rmse"])
     plt.scatter(x=pandas_df["Sum"], y=pandas_df["rmse"])
     plt.xscale("log")
@@ -298,12 +313,12 @@ def build_graph(final_df):
     plt.xlabel("Sum")
     plt.ylabel("RMSE")
     plt.title("Scatter Plot mit logarithmischer Skala auf der x-Achse")
-
+    plt.savefig("/mnt/simhomes/binzc/png/small_scatter_plot.png")
+    plt.clf()
     sns.violinplot(x=pandas_df["rmse"], inner_kws=dict(box_width=15, whis_width=2, color=".8"))
-    plt.savefig("/mnt/simhomes/binzc/png/violin_plot.png")
+    plt.savefig("/mnt/simhomes/binzc/png/small_violin_plot.png")
     plt.clf()
-    plt.savefig("/mnt/simhomes/binzc/png/scatter_plot.png")
-    plt.clf()
+    
 
 #ngram_table.write.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq", mode= 'overwrite'))
 #ngram_table = spark.read.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq").limit(10)
@@ -318,6 +333,12 @@ print(time.time() - start1)
 print("readin time")
 start = time.time()
 
+start_sum_0 = time.time()
+sum_table = Sum_no_zero(ngram_table)
+sum_table.show()
+print(time.time()- start_sum_0)
+print("sum_no_zero zeit")
+
 freq_table              = freq_df(ngram_table)
 freq_table.show()
 
@@ -326,14 +347,7 @@ print("freq zeit")
 #df = freq_table
 
 #df = freq_table.coalesce(4*128)
-df = freq_table.repartition(4 * 128, col(group_column))
-
-start_sum_new = time.time()
-
-sum_table = df.select(group_column,"Frequency_N").groupby(group_column).sum(y_column).select(group_column,"sum(Frequency_N)").withColumnRenamed("sum(Frequency_N)", "Sum")
-sum_table.show()
-print(time.time()- start_sum_new)
-print("sum zeit")
+df = freq_table.repartition(4* 128, col(group_column))
 
 start_aprox = time.time()
 beta = df.groupby(group_column).applyInPandas(ols,schema= schema)
@@ -365,7 +379,7 @@ aprox_table = result_df.withColumn(
 aprox_table = aprox_table.groupby(group_column).agg(collect_list("Frequency_N").alias("Frequency_N"),collect_list("Aprox").alias("Aprox"))
 
 aprox_table.show()
-aprox_table = aprox_table.coalesce(3*128).persist()
+aprox_table = aprox_table.persist()
 
 print(time.time()- start_build)
 print("build time")
@@ -386,8 +400,11 @@ print(time.time()- start_rmse)
 print("rmse time")
 
 final  = sum_table.join(rmse_table, on="NgramId").join(ZScore_N_df,on="NgramId").join(ZScore_df,on="NgramId")
-final= final.select("NgramId","Sum","rmse","ZScore_N_Array","ZScoreArray")
+final= final.select("NgramId","Sum","rmse","ZScore_N_Array","ZScoreArray").persist()
 
-#final.coalesce(2*128).sortWithinPartitions("Sum").write.parquet("/mnt/simhomes/binzc/data_transfer/final_df" , mode= 'overwrite')
+#final.coalesce(2*128).sortWithinPartitions("Sum").write.parquet("/mnt/simhomes/binzc/data_transfer/small_final_df" , mode= 'overwrite')
 build_graph(final)
+
+while(True):
+    pass
 

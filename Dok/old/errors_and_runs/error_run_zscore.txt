@@ -1,0 +1,773 @@
+24/02/27 18:01:59 WARN Utils: Your hostname, vSim03 resolves to a loopback address: 127.0.1.1; using 141.3.48.27 instead (on interface eth0)
+24/02/27 18:01:59 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+24/02/27 18:02:00 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+24/02/27 18:02:00 WARN SparkConf: Note that spark.local.dir will be overridden by the value set by the cluster manager (via SPARK_LOCAL_DIRS in mesos/standalone/kubernetes and LOCAL_DIRS in YARN).
+Loading "token.parquet" ...
+Loading "contains.parquet" ...
+Loading "data.parquet" ...
++-----------+--------------------+--------------------+-----------+--------------------+----------+
+|    NgramId|         Frequency_N|         Frequency_L|   NgramIdL|         Frequency_R|  NgramIdR|
++-----------+--------------------+--------------------+-----------+--------------------+----------+
+|34359760864|{1597 -> 1, 1602 ...|{1473 -> 1, 1484 ...|25769804965|{1492 -> 41, 1509...|        93|
+|34359743755|{1882 -> 1, 1891 ...|{1512 -> 5, 1518 ...|25769804305|{1492 -> 41, 1509...|        93|
+|34359760963|{1545 -> 1, 1746 ...|{1473 -> 59, 1475...|25769804946|{1502 -> 1, 1507 ...|       405|
+|34359754237|{1621 -> 1, 1825 ...|{1475 -> 1, 1489 ...|25769806360|{1502 -> 1, 1507 ...|       405|
+|34359762238|{1845 -> 1, 1858 ...|{1520 -> 1, 1524 ...|25769804424|{1473 -> 1, 1492 ...|      1785|
+|34359757082|{1663 -> 1, 1671 ...|{1475 -> 1, 1489 ...|25769806360|{1473 -> 1, 1492 ...|      1785|
+|34359752107|{1875 -> 1, 1876 ...|{1520 -> 1, 1524 ...|25769804424|{1492 -> 1, 1586 ...|      3521|
+|34359741025|{1846 -> 6, 1847 ...|{1475 -> 1, 1489 ...|25769806360|{1492 -> 1, 1586 ...|      3521|
+|34359749993|{1842 -> 2, 1843 ...|{1520 -> 1, 1524 ...|25769804424|{1473 -> 1, 1492 ...|      4565|
+|34359743850|{1678 -> 1, 1687 ...|{1473 -> 1, 1484 ...|25769804965|{1473 -> 1, 1492 ...|      4565|
+|34359738503|{1823 -> 1, 1870 ...|{1512 -> 5, 1518 ...|25769804305|{1473 -> 1, 1492 ...|      4565|
+|34359739469|{1798 -> 1, 1808 ...|{1492 -> 1, 1521 ...|25769807079|{1473 -> 3, 1475 ...|      4684|
+|34359756695|{1845 -> 1, 1856 ...|{1492 -> 3, 1517 ...|25769806866|{1473 -> 3, 1475 ...|      4684|
+|34359755977|{1800 -> 2, 1811 ...|{1492 -> 13, 1493...|25769806225|{1473 -> 3, 1475 ...|      4684|
+|34359742530|{1862 -> 3, 1868 ...|{1545 -> 2, 1584 ...|25769806913|{1492 -> 8, 1520 ...|8589935200|
+|34359750656|{1853 -> 1, 1891 ...|{1484 -> 3, 1489 ...|25769806526|{1492 -> 8, 1520 ...|8589935200|
+|34359757918|{1792 -> 1, 1859 ...|{1492 -> 13, 1493...|25769806225|{1492 -> 8, 1520 ...|8589935200|
+|34359747177|{1806 -> 2, 1817 ...|{1492 -> 1, 1521 ...|25769807079|{1517 -> 1, 1540 ...|8589935207|
+|34359751108|{1761 -> 1, 1777 ...|{1475 -> 1, 1489 ...|25769806360|{1517 -> 1, 1540 ...|8589935207|
+|34359740010|{1813 -> 1, 1827 ...|{1492 -> 13, 1493...|25769806225|{1517 -> 1, 1540 ...|8589935207|
++-----------+--------------------+--------------------+-----------+--------------------+----------+
+only showing top 20 rows
+
+856.8598806858063
+readin time
++-----------+-----+
+|    NgramId|  Sum|
++-----------+-----+
+|34359757082|11995|
+|34359755977| 4000|
+|34359760963|44127|
+|34359750656|   68|
+|34359749035|  162|
+|34359755143|  251|
+|34359740010|   89|
+|34359743049|  190|
+|34359762238|  136|
+|34359752742|   47|
+|34359743755|   80|
+|34359740158|   62|
+|34359741798| 1057|
+|34359742024|   83|
+|34359760864|  334|
+|34359754068|  105|
+|34359742465| 1292|
+|34359754632|  922|
+|34359751437|   82|
+|34359749715|  346|
++-----------+-----+
+only showing top 20 rows
+
+33.4827036857605
+sum_no_zero zeit
+/mnt/simhomes/binzc/BA/env/lib/python3.8/site-packages/pyspark/sql/column.py:460: FutureWarning: A column as 'key' in getItem is deprecated as of Spark 3.0, and will not be supported in the future release. Use `column[key]` or `column.key` syntax instead.
+  warnings.warn(
++-----------+-----------+-----------+-----------+
+|    NgramId|Frequency_N|Frequency_L|Frequency_R|
++-----------+-----------+-----------+-----------+
+|34359760864|          0|       8864|       3710|
+|34359760864|          0|       9577|       3340|
+|34359743755|          0|         28|       3710|
+|34359743755|          0|          7|       3340|
+|34359760963|          0|     530644|         63|
+|34359760963|          0|     517393|         21|
+|34359754237|          0|      31981|         63|
+|34359754237|          0|      35746|         21|
+|34359762238|          0|         45|        364|
+|34359762238|          0|         11|        540|
+|34359757082|          5|      31981|        364|
+|34359757082|          6|      35746|        540|
+|34359752107|          0|         45|          4|
+|34359752107|          0|         11|          0|
+|34359741025|          0|      31981|          4|
+|34359741025|          0|      35746|          0|
+|34359749993|          0|         45|      12608|
+|34359749993|          0|         11|      12387|
+|34359743850|          1|       8864|      12608|
+|34359743850|          0|       9577|      12387|
++-----------+-----------+-----------+-----------+
+only showing top 20 rows
+
+35.876455783843994
+freq zeit
+24/02/27 18:22:58 ERROR ServerRuntime$Responder: An I/O error has occurred while writing a response message entity to the container output stream.
+org.glassfish.jersey.server.internal.process.MappableException: org.sparkproject.jetty.io.EofException
+        at org.glassfish.jersey.server.internal.MappableExceptionWrapperInterceptor.aroundWriteTo(MappableExceptionWrapperInterceptor.java:67)
+        at org.glassfish.jersey.message.internal.WriterInterceptorExecutor.proceed(WriterInterceptorExecutor.java:139)
+        at org.glassfish.jersey.message.internal.MessageBodyFactory.writeTo(MessageBodyFactory.java:1116)
+        at org.glassfish.jersey.server.ServerRuntime$Responder.writeResponse(ServerRuntime.java:649)
+        at org.glassfish.jersey.server.ServerRuntime$Responder.processResponse(ServerRuntime.java:380)
+        at org.glassfish.jersey.server.ServerRuntime$Responder.process(ServerRuntime.java:370)
+        at org.glassfish.jersey.server.ServerRuntime$1.run(ServerRuntime.java:259)
+        at org.glassfish.jersey.internal.Errors$1.call(Errors.java:248)
+        at org.glassfish.jersey.internal.Errors$1.call(Errors.java:244)
+        at org.glassfish.jersey.internal.Errors.process(Errors.java:292)
+        at org.glassfish.jersey.internal.Errors.process(Errors.java:274)
+        at org.glassfish.jersey.internal.Errors.process(Errors.java:244)
+        at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:265)
+        at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:235)
+        at org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:684)
+        at org.glassfish.jersey.servlet.WebComponent.serviceImpl(WebComponent.java:394)
+        at org.glassfish.jersey.servlet.WebComponent.service(WebComponent.java:346)
+        at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:358)
+        at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:311)
+        at org.glassfish.jersey.servlet.ServletContainer.service(ServletContainer.java:205)
+        at org.sparkproject.jetty.servlet.ServletHolder.handle(ServletHolder.java:799)
+        at org.sparkproject.jetty.servlet.ServletHandler$ChainEnd.doFilter(ServletHandler.java:1656)
+        at org.apache.spark.ui.HttpSecurityFilter.doFilter(HttpSecurityFilter.scala:95)
+        at org.sparkproject.jetty.servlet.FilterHolder.doFilter(FilterHolder.java:193)
+        at org.sparkproject.jetty.servlet.ServletHandler$Chain.doFilter(ServletHandler.java:1626)
+        at org.sparkproject.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:552)
+        at org.sparkproject.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:233)
+        at org.sparkproject.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1440)
+        at org.sparkproject.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:188)
+        at org.sparkproject.jetty.servlet.ServletHandler.doScope(ServletHandler.java:505)
+        at org.sparkproject.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:186)
+        at org.sparkproject.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1355)
+        at org.sparkproject.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:141)
+        at org.sparkproject.jetty.server.handler.gzip.GzipHandler.handle(GzipHandler.java:772)
+        at org.sparkproject.jetty.server.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:234)
+        at org.sparkproject.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:127)
+        at org.sparkproject.jetty.server.Server.handle(Server.java:516)
+        at org.sparkproject.jetty.server.HttpChannel.lambda$handle$1(HttpChannel.java:487)
+        at org.sparkproject.jetty.server.HttpChannel.dispatch(HttpChannel.java:732)
+        at org.sparkproject.jetty.server.HttpChannel.handle(HttpChannel.java:479)
+        at org.sparkproject.jetty.server.HttpConnection.onFillable(HttpConnection.java:277)
+        at org.sparkproject.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:311)
+        at org.sparkproject.jetty.io.FillInterest.fillable(FillInterest.java:105)
+        at org.sparkproject.jetty.io.ChannelEndPoint$1.run(ChannelEndPoint.java:104)
+        at org.sparkproject.jetty.util.thread.strategy.EatWhatYouKill.runTask(EatWhatYouKill.java:338)
+        at org.sparkproject.jetty.util.thread.strategy.EatWhatYouKill.doProduce(EatWhatYouKill.java:315)
+        at org.sparkproject.jetty.util.thread.strategy.EatWhatYouKill.tryProduce(EatWhatYouKill.java:173)
+        at org.sparkproject.jetty.util.thread.strategy.EatWhatYouKill.run(EatWhatYouKill.java:131)
+        at org.sparkproject.jetty.util.thread.ReservedThreadExecutor$ReservedThread.run(ReservedThreadExecutor.java:409)        at org.sparkproject.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:883)
+        at org.sparkproject.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1034)
+        at java.lang.Thread.run(Thread.java:748)
+Caused by: org.sparkproject.jetty.io.EofException
+        at org.sparkproject.jetty.io.ChannelEndPoint.flush(ChannelEndPoint.java:280)
+        at org.sparkproject.jetty.io.WriteFlusher.flush(WriteFlusher.java:422)
+        at org.sparkproject.jetty.io.WriteFlusher.write(WriteFlusher.java:277)
+        at org.sparkproject.jetty.io.AbstractEndPoint.write(AbstractEndPoint.java:381)
+        at org.sparkproject.jetty.server.HttpConnection$SendCallback.process(HttpConnection.java:831)
+        at org.sparkproject.jetty.util.IteratingCallback.processing(IteratingCallback.java:248)
+        at org.sparkproject.jetty.util.IteratingCallback.iterate(IteratingCallback.java:229)
+        at org.sparkproject.jetty.server.HttpConnection.send(HttpConnection.java:555)
+        at org.sparkproject.jetty.server.HttpChannel.sendResponse(HttpChannel.java:1014)
+        at org.sparkproject.jetty.server.HttpChannel.write(HttpChannel.java:1086)
+        at org.sparkproject.jetty.server.handler.gzip.GzipHttpOutputInterceptor$GzipBufferCB.process(GzipHttpOutputInterceptor.java:414)
+        at org.sparkproject.jetty.util.IteratingCallback.processing(IteratingCallback.java:248)
+        at org.sparkproject.jetty.util.IteratingCallback.iterate(IteratingCallback.java:229)
+        at org.sparkproject.jetty.server.handler.gzip.GzipHttpOutputInterceptor.gzip(GzipHttpOutputInterceptor.java:137)        at org.sparkproject.jetty.server.handler.gzip.GzipHttpOutputInterceptor.write(GzipHttpOutputInterceptor.java:119)
+        at org.sparkproject.jetty.server.HttpOutput.channelWrite(HttpOutput.java:285)
+        at org.sparkproject.jetty.server.HttpOutput.channelWrite(HttpOutput.java:269)
+        at org.sparkproject.jetty.server.HttpOutput.write(HttpOutput.java:873)
+        at org.glassfish.jersey.servlet.internal.ResponseWriter$NonCloseableOutputStreamWrapper.write(ResponseWriter.java:302)
+        at org.glassfish.jersey.message.internal.CommittingOutputStream.write(CommittingOutputStream.java:200)
+        at org.glassfish.jersey.message.internal.WriterInterceptorExecutor$UnCloseableOutputStream.write(WriterInterceptorExecutor.java:276)
+        at com.fasterxml.jackson.core.json.UTF8JsonGenerator._flushBuffer(UTF8JsonGenerator.java:2203)
+        at com.fasterxml.jackson.core.json.UTF8JsonGenerator._writeBytes(UTF8JsonGenerator.java:1290)
+        at com.fasterxml.jackson.core.json.UTF8JsonGenerator._writePPFieldName(UTF8JsonGenerator.java:488)
+        at com.fasterxml.jackson.core.json.UTF8JsonGenerator.writeFieldName(UTF8JsonGenerator.java:262)
+        at com.fasterxml.jackson.databind.ser.BeanPropertyWriter.serializeAsField(BeanPropertyWriter.java:730)
+        at com.fasterxml.jackson.databind.ser.std.BeanSerializerBase.serializeFields(BeanSerializerBase.java:772)
+        at com.fasterxml.jackson.databind.ser.BeanSerializer.serialize(BeanSerializer.java:178)
+        at com.fasterxml.jackson.databind.ser.std.MapSerializer.serializeOptionalFields(MapSerializer.java:869)
+        at com.fasterxml.jackson.databind.ser.std.MapSerializer.serializeWithoutTypeInfo(MapSerializer.java:760)
+        at com.fasterxml.jackson.databind.ser.std.MapSerializer.serialize(MapSerializer.java:720)
+        at com.fasterxml.jackson.databind.ser.std.MapSerializer.serialize(MapSerializer.java:35)
+        at com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer.serialize(StdDelegatingSerializer.java:167)
+        at com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer.serialize(ReferenceTypeSerializer.java:386)
+        at com.fasterxml.jackson.databind.ser.BeanPropertyWriter.serializeAsField(BeanPropertyWriter.java:732)
+        at com.fasterxml.jackson.databind.ser.std.BeanSerializerBase.serializeFields(BeanSerializerBase.java:772)
+        at com.fasterxml.jackson.databind.ser.BeanSerializer.serialize(BeanSerializer.java:178)
+        at com.fasterxml.jackson.databind.ser.DefaultSerializerProvider._serialize(DefaultSerializerProvider.java:479)
+        at com.fasterxml.jackson.databind.ser.DefaultSerializerProvider.serializeValue(DefaultSerializerProvider.java:318)
+        at com.fasterxml.jackson.databind.ObjectMapper._writeValueAndClose(ObjectMapper.java:4719)
+        at com.fasterxml.jackson.databind.ObjectMapper.writeValue(ObjectMapper.java:3923)
+        at org.apache.spark.status.api.v1.JacksonMessageWriter.writeTo(JacksonMessageWriter.scala:70)
+        at org.glassfish.jersey.message.internal.WriterInterceptorExecutor$TerminalWriterInterceptor.invokeWriteTo(WriterInterceptorExecutor.java:242)
+        at org.glassfish.jersey.message.internal.WriterInterceptorExecutor$TerminalWriterInterceptor.aroundWriteTo(WriterInterceptorExecutor.java:227)
+        at org.glassfish.jersey.message.internal.WriterInterceptorExecutor.proceed(WriterInterceptorExecutor.java:139)
+        at org.glassfish.jersey.server.internal.JsonWithPaddingInterceptor.aroundWriteTo(JsonWithPaddingInterceptor.java:85)
+        at org.glassfish.jersey.message.internal.WriterInterceptorExecutor.proceed(WriterInterceptorExecutor.java:139)
+        at org.glassfish.jersey.server.internal.MappableExceptionWrapperInterceptor.aroundWriteTo(MappableExceptionWrapperInterceptor.java:61)
+        ... 51 more
+Caused by: java.io.IOException: Broken pipe
+        at sun.nio.ch.FileDispatcherImpl.writev0(Native Method)
+        at sun.nio.ch.SocketDispatcher.writev(SocketDispatcher.java:51)
+        at sun.nio.ch.IOUtil.write(IOUtil.java:148)
+        at sun.nio.ch.SocketChannelImpl.write(SocketChannelImpl.java:504)
+        at java.nio.channels.SocketChannel.write(SocketChannel.java:502)
+        at org.sparkproject.jetty.io.ChannelEndPoint.flush(ChannelEndPoint.java:274)
+        ... 98 more
++-----------+--------------------+--------------------+--------------------+
+|    NgramId|         Frequency_L|         Frequency_R|                  ic|
++-----------+--------------------+--------------------+--------------------+
+|34359738526|5.785151042794976E-5|1.199434447952907E-5|-0.43876826761147525|
+|34359739005|  6.5926903106408E-5|-2.12093633224084...|  0.3118934291129771|
+|34359739425|1.771141860885169...|3.249809668170425E-5| -0.2313405218871264|
+|34359741046|4.366503744362048E-5|-2.03730114277030...|0.015499440457752468|
+|34359741286|6.834026887775936E-5|9.579683370838315E-7| -0.6588692322673051|
+|34359741781|0.002792689817272555|7.320964220936142E-7|  -2.977547695741916|
+|34359742241|-1.09661696995519...|1.677513344938276E-4|-0.33616018614514404|
+|34359743248|-6.93709984361998...|9.341564674522763E-5|-0.07547831996421694|
+|34359743676|-8.79795603466086...|2.466034753221812...|0.005609839089079693|
+|34359743960|5.923031018912553E-6|-1.79764591965097...| 0.08339094956235657|
+|34359744470|3.742653082138325E-5|1.510681012203262...|  0.6961741835318186|
+|34359744530|-6.40026783021568...|5.473289947519903E-6|-0.05279480367489...|
+|34359744870|-6.78842997534938E-6|2.255599295448040...|-0.20289039321143829|
+|34359745820|1.936200016798956...|1.333039514160224...|-0.06896352391830224|
+|34359745832|2.478953931393094...|-9.60584572812250...|-0.06940836932275841|
+|34359747038|3.717231691187207E-5|-1.92463220362975...| -0.2894083102801821|
+|34359748576|-6.13042681667105...|7.469092163505016E-5|-0.01100312534545...|
+|34359748722|  2.9587208856966E-6|3.706076707309656E-5|-0.01132011538059785|
+|34359750775|4.875840211741926E-5|-2.96734833179893...|0.056204478350443454|
+|34359751839|6.011920837768541E-4|-1.36521125820351...|-0.03080689354298...|
++-----------+--------------------+--------------------+--------------------+
+only showing top 20 rows
+
+771.5731341838837
+mlr zeit
+24/02/27 18:34:03 ERROR BlockManagerMasterEndpoint: Fail to know the executor driver is alive or not.
+org.apache.spark.SparkException: Exception thrown in awaitResult:
+        at org.apache.spark.util.SparkThreadUtils$.awaitResult(SparkThreadUtils.scala:56)
+        at org.apache.spark.util.ThreadUtils$.awaitResult(ThreadUtils.scala:310)
+        at org.apache.spark.rpc.RpcTimeout.awaitResult(RpcTimeout.scala:75)
+        at org.apache.spark.rpc.RpcEnv.setupEndpointRefByURI(RpcEnv.scala:102)
+        at org.apache.spark.rpc.RpcEnv.setupEndpointRef(RpcEnv.scala:110)
+        at org.apache.spark.util.RpcUtils$.makeDriverRef(RpcUtils.scala:36)
+        at org.apache.spark.storage.BlockManagerMasterEndpoint.driverEndpoint$lzycompute(BlockManagerMasterEndpoint.scala:124)
+        at org.apache.spark.storage.BlockManagerMasterEndpoint.org$apache$spark$storage$BlockManagerMasterEndpoint$$driverEndpoint(BlockManagerMasterEndpoint.scala:123)
+        at org.apache.spark.storage.BlockManagerMasterEndpoint$$anonfun$handleBlockRemovalFailure$1.applyOrElse(BlockManagerMasterEndpoint.scala:317)
+        at org.apache.spark.storage.BlockManagerMasterEndpoint$$anonfun$handleBlockRemovalFailure$1.applyOrElse(BlockManagerMasterEndpoint.scala:306)
+        at scala.runtime.AbstractPartialFunction.apply(AbstractPartialFunction.scala:38)
+        at scala.util.Failure.recover(Try.scala:234)
+        at scala.concurrent.Future.$anonfun$recover$1(Future.scala:395)
+        at scala.concurrent.impl.Promise.liftedTree1$1(Promise.scala:33)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+        at java.lang.Thread.run(Thread.java:748)
+Caused by: org.apache.spark.rpc.RpcEndpointNotFoundException: Cannot find endpoint: spark://CoarseGrainedScheduler@i40vsim03.is.ipd.kit.edu:36469
+        at org.apache.spark.rpc.netty.NettyRpcEnv.$anonfun$asyncSetupEndpointRefByURI$1(NettyRpcEnv.scala:148)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.$anonfun$asyncSetupEndpointRefByURI$1$adapted(NettyRpcEnv.scala:144)
+        at scala.concurrent.Future.$anonfun$flatMap$1(Future.scala:307)
+        at scala.concurrent.impl.Promise.$anonfun$transformWith$1(Promise.scala:41)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at org.apache.spark.util.ThreadUtils$$anon$1.execute(ThreadUtils.scala:99)
+        at scala.concurrent.impl.ExecutionContextImpl$$anon$4.execute(ExecutionContextImpl.scala:138)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.complete(Promise.scala:53)
+        at scala.concurrent.Promise.complete$(Promise.scala:52)
+        at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:187)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at org.apache.spark.util.ThreadUtils$$anon$1.execute(ThreadUtils.scala:99)
+        at scala.concurrent.impl.ExecutionContextImpl$$anon$4.execute(ExecutionContextImpl.scala:138)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.complete(Promise.scala:53)
+        at scala.concurrent.Promise.complete$(Promise.scala:52)
+        at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:187)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at scala.concurrent.BatchingExecutor$Batch.processBatch$1(BatchingExecutor.scala:67)
+        at scala.concurrent.BatchingExecutor$Batch.$anonfun$run$1(BatchingExecutor.scala:82)
+        at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+        at scala.concurrent.BlockContext$.withBlockContext(BlockContext.scala:85)
+        at scala.concurrent.BatchingExecutor$Batch.run(BatchingExecutor.scala:59)
+        at scala.concurrent.Future$InternalCallbackExecutor$.unbatchedExecute(Future.scala:875)
+        at scala.concurrent.BatchingExecutor.execute(BatchingExecutor.scala:110)
+        at scala.concurrent.BatchingExecutor.execute$(BatchingExecutor.scala:107)
+        at scala.concurrent.Future$InternalCallbackExecutor$.execute(Future.scala:873)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.trySuccess(Promise.scala:94)
+        at scala.concurrent.Promise.trySuccess$(Promise.scala:94)
+        at scala.concurrent.impl.Promise$DefaultPromise.trySuccess(Promise.scala:187)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.onSuccess$1(NettyRpcEnv.scala:225)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.$anonfun$askAbortable$5(NettyRpcEnv.scala:239)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.$anonfun$askAbortable$5$adapted(NettyRpcEnv.scala:238)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at org.apache.spark.util.ThreadUtils$$anon$1.execute(ThreadUtils.scala:99)
+        at scala.concurrent.impl.ExecutionContextImpl$$anon$4.execute(ExecutionContextImpl.scala:138)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.complete(Promise.scala:53)
+        at scala.concurrent.Promise.complete$(Promise.scala:52)
+        at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:187)
+        at scala.concurrent.Promise.success(Promise.scala:86)
+        at scala.concurrent.Promise.success$(Promise.scala:86)
+        at scala.concurrent.impl.Promise$DefaultPromise.success(Promise.scala:187)
+        at org.apache.spark.rpc.netty.LocalNettyRpcCallContext.send(NettyRpcCallContext.scala:50)
+        at org.apache.spark.rpc.netty.NettyRpcCallContext.reply(NettyRpcCallContext.scala:32)
+        at org.apache.spark.rpc.netty.RpcEndpointVerifier$$anonfun$receiveAndReply$1.applyOrElse(RpcEndpointVerifier.scala:31)
+        at org.apache.spark.rpc.netty.Inbox.$anonfun$process$1(Inbox.scala:103)
+        at org.apache.spark.rpc.netty.Inbox.safelyCall(Inbox.scala:213)
+        at org.apache.spark.rpc.netty.Inbox.process(Inbox.scala:100)
+        at org.apache.spark.rpc.netty.MessageLoop.org$apache$spark$rpc$netty$MessageLoop$$receiveLoop(MessageLoop.scala:75)
+        at org.apache.spark.rpc.netty.MessageLoop$$anon$1.run(MessageLoop.scala:41)
+        ... 3 more
+24/02/27 18:34:03 WARN BlockManagerMasterEndpoint: Error trying to remove shuffle 10. The executor driver may have been lost.
+org.apache.spark.rpc.RpcTimeoutException: Cannot receive any reply from i40vsim03.is.ipd.kit.edu:36469 in 120 seconds. This timeout is controlled by spark.rpc.askTimeout
+        at org.apache.spark.rpc.RpcTimeout.org$apache$spark$rpc$RpcTimeout$$createRpcTimeoutException(RpcTimeout.scala:47)
+        at org.apache.spark.rpc.RpcTimeout$$anonfun$addMessageIfTimeout$1.applyOrElse(RpcTimeout.scala:62)
+        at org.apache.spark.rpc.RpcTimeout$$anonfun$addMessageIfTimeout$1.applyOrElse(RpcTimeout.scala:58)
+        at scala.runtime.AbstractPartialFunction.apply(AbstractPartialFunction.scala:38)
+        at scala.util.Failure.recover(Try.scala:234)
+        at scala.concurrent.Future.$anonfun$recover$1(Future.scala:395)
+        at scala.concurrent.impl.Promise.liftedTree1$1(Promise.scala:33)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at org.apache.spark.util.ThreadUtils$$anon$1.execute(ThreadUtils.scala:99)
+        at scala.concurrent.impl.ExecutionContextImpl$$anon$4.execute(ExecutionContextImpl.scala:138)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.complete(Promise.scala:53)
+        at scala.concurrent.Promise.complete$(Promise.scala:52)
+        at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:187)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at scala.concurrent.BatchingExecutor$Batch.processBatch$1(BatchingExecutor.scala:67)
+        at scala.concurrent.BatchingExecutor$Batch.$anonfun$run$1(BatchingExecutor.scala:82)
+        at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+        at scala.concurrent.BlockContext$.withBlockContext(BlockContext.scala:85)
+        at scala.concurrent.BatchingExecutor$Batch.run(BatchingExecutor.scala:59)
+        at scala.concurrent.Future$InternalCallbackExecutor$.unbatchedExecute(Future.scala:875)
+        at scala.concurrent.BatchingExecutor.execute(BatchingExecutor.scala:110)
+        at scala.concurrent.BatchingExecutor.execute$(BatchingExecutor.scala:107)
+        at scala.concurrent.Future$InternalCallbackExecutor$.execute(Future.scala:873)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.tryFailure(Promise.scala:112)
+        at scala.concurrent.Promise.tryFailure$(Promise.scala:112)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryFailure(Promise.scala:187)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.org$apache$spark$rpc$netty$NettyRpcEnv$$onFailure$1(NettyRpcEnv.scala:214)
+        at org.apache.spark.rpc.netty.NettyRpcEnv$$anon$1.run(NettyRpcEnv.scala:264)
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:180)
+        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+        at java.lang.Thread.run(Thread.java:748)
+Caused by: java.util.concurrent.TimeoutException: Cannot receive any reply from i40vsim03.is.ipd.kit.edu:36469 in 120 seconds
+        at org.apache.spark.rpc.netty.NettyRpcEnv$$anon$1.run(NettyRpcEnv.scala:265)
+        ... 7 more
+24/02/27 18:37:20 WARN NettyRpcEnv: Ignored message: true       (0 + 0) / 86016]
++-----------+--------------------+--------------------+
+|    NgramId|         Frequency_N|               Aprox|
++-----------+--------------------+--------------------+
+|34359738526|[0, 0, 0, 0, 0, 0...|[-0.1999051363370...|
+|34359739005|[0, 0, 0, 0, 0, 0...|[0.30672745693551...|
+|34359739425|[0, 0, 0, 0, 0, 0...|[-0.2296371379847...|
+|34359741046|[0, 0, 0, 0, 0, 0...|[0.05293056868497...|
+|34359741286|[0, 0, 0, 0, 0, 0...|[-0.5182308715353...|
+|34359741781|[1, 0, 1, 3, 6, 2...|[-1.4938635219566...|
+|34359742241|[0, 0, 0, 0, 0, 0...|[-0.2558772845870...|
+|34359743248|[0, 0, 0, 0, 0, 0...|[-0.0366493334709...|
+|34359743676|[0, 0, 0, 0, 0, 0...|[-0.0040689264771...|
+|34359743960|[0, 0, 0, 0, 0, 2...|[0.13141655817406...|
+|34359744470|[0, 0, 0, 3, 1, 0...|[0.85012241217180...|
+|34359744530|[0, 0, 0, 0, 0, 0...|[-0.0218467973697...|
+|34359744870|[0, 0, 0, 0, 0, 0...|[-0.1591598813311...|
+|34359745820|[0, 0, 0, 0, 0, 0...|[-0.0557384646491...|
+|34359745832|[0, 0, 0, 0, 0, 0...|[-0.0397049558424...|
+|34359747038|[0, 0, 0, 0, 0, 0...|[-0.2054374680921...|
+|34359748576|[0, 0, 0, 0, 0, 0...|[0.01262210037101...|
+|34359748722|[0, 0, 0, 0, 0, 0...|[0.05508767271039...|
+|34359750775|[0, 1, 2, 0, 1, 0...|[0.40020936229818...|
+|34359751839|[0, 0, 0, 0, 0, 0...|[0.30928483031528...|
++-----------+--------------------+--------------------+
+only showing top 20 rows
+
+1964.5450992584229
+build time
+24/02/27 19:34:07 ERROR BlockManagerMasterEndpoint: Fail to know the executor driver is alive or not.
+org.apache.spark.SparkException: Exception thrown in awaitResult:
+        at org.apache.spark.util.SparkThreadUtils$.awaitResult(SparkThreadUtils.scala:56)
+        at org.apache.spark.util.ThreadUtils$.awaitResult(ThreadUtils.scala:310)
+        at org.apache.spark.rpc.RpcTimeout.awaitResult(RpcTimeout.scala:75)
+        at org.apache.spark.rpc.RpcEnv.setupEndpointRefByURI(RpcEnv.scala:102)
+        at org.apache.spark.rpc.RpcEnv.setupEndpointRef(RpcEnv.scala:110)
+        at org.apache.spark.util.RpcUtils$.makeDriverRef(RpcUtils.scala:36)
+        at org.apache.spark.storage.BlockManagerMasterEndpoint.driverEndpoint$lzycompute(BlockManagerMasterEndpoint.scala:124)
+        at org.apache.spark.storage.BlockManagerMasterEndpoint.org$apache$spark$storage$BlockManagerMasterEndpoint$$driverEndpoint(BlockManagerMasterEndpoint.scala:123)
+        at org.apache.spark.storage.BlockManagerMasterEndpoint$$anonfun$handleBlockRemovalFailure$1.applyOrElse(BlockManagerMasterEndpoint.scala:317)
+        at org.apache.spark.storage.BlockManagerMasterEndpoint$$anonfun$handleBlockRemovalFailure$1.applyOrElse(BlockManagerMasterEndpoint.scala:306)
+        at scala.runtime.AbstractPartialFunction.apply(AbstractPartialFunction.scala:38)
+        at scala.util.Failure.recover(Try.scala:234)
+        at scala.concurrent.Future.$anonfun$recover$1(Future.scala:395)
+        at scala.concurrent.impl.Promise.liftedTree1$1(Promise.scala:33)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+        at java.lang.Thread.run(Thread.java:748)
+Caused by: org.apache.spark.rpc.RpcEndpointNotFoundException: Cannot find endpoint: spark://CoarseGrainedScheduler@i40vsim03.is.ipd.kit.edu:36469
+        at org.apache.spark.rpc.netty.NettyRpcEnv.$anonfun$asyncSetupEndpointRefByURI$1(NettyRpcEnv.scala:148)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.$anonfun$asyncSetupEndpointRefByURI$1$adapted(NettyRpcEnv.scala:144)
+        at scala.concurrent.Future.$anonfun$flatMap$1(Future.scala:307)
+        at scala.concurrent.impl.Promise.$anonfun$transformWith$1(Promise.scala:41)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at org.apache.spark.util.ThreadUtils$$anon$1.execute(ThreadUtils.scala:99)
+        at scala.concurrent.impl.ExecutionContextImpl$$anon$4.execute(ExecutionContextImpl.scala:138)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.complete(Promise.scala:53)
+        at scala.concurrent.Promise.complete$(Promise.scala:52)
+        at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:187)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at org.apache.spark.util.ThreadUtils$$anon$1.execute(ThreadUtils.scala:99)
+        at scala.concurrent.impl.ExecutionContextImpl$$anon$4.execute(ExecutionContextImpl.scala:138)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.complete(Promise.scala:53)
+        at scala.concurrent.Promise.complete$(Promise.scala:52)
+        at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:187)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at scala.concurrent.BatchingExecutor$Batch.processBatch$1(BatchingExecutor.scala:67)
+        at scala.concurrent.BatchingExecutor$Batch.$anonfun$run$1(BatchingExecutor.scala:82)
+        at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+        at scala.concurrent.BlockContext$.withBlockContext(BlockContext.scala:85)
+        at scala.concurrent.BatchingExecutor$Batch.run(BatchingExecutor.scala:59)
+        at scala.concurrent.Future$InternalCallbackExecutor$.unbatchedExecute(Future.scala:875)
+        at scala.concurrent.BatchingExecutor.execute(BatchingExecutor.scala:110)
+        at scala.concurrent.BatchingExecutor.execute$(BatchingExecutor.scala:107)
+        at scala.concurrent.Future$InternalCallbackExecutor$.execute(Future.scala:873)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.trySuccess(Promise.scala:94)
+        at scala.concurrent.Promise.trySuccess$(Promise.scala:94)
+        at scala.concurrent.impl.Promise$DefaultPromise.trySuccess(Promise.scala:187)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.onSuccess$1(NettyRpcEnv.scala:225)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.$anonfun$askAbortable$5(NettyRpcEnv.scala:239)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.$anonfun$askAbortable$5$adapted(NettyRpcEnv.scala:238)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at org.apache.spark.util.ThreadUtils$$anon$1.execute(ThreadUtils.scala:99)
+        at scala.concurrent.impl.ExecutionContextImpl$$anon$4.execute(ExecutionContextImpl.scala:138)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.complete(Promise.scala:53)
+        at scala.concurrent.Promise.complete$(Promise.scala:52)
+        at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:187)
+        at scala.concurrent.Promise.success(Promise.scala:86)
+        at scala.concurrent.Promise.success$(Promise.scala:86)
+        at scala.concurrent.impl.Promise$DefaultPromise.success(Promise.scala:187)
+        at org.apache.spark.rpc.netty.LocalNettyRpcCallContext.send(NettyRpcCallContext.scala:50)
+        at org.apache.spark.rpc.netty.NettyRpcCallContext.reply(NettyRpcCallContext.scala:32)
+        at org.apache.spark.rpc.netty.RpcEndpointVerifier$$anonfun$receiveAndReply$1.applyOrElse(RpcEndpointVerifier.scala:31)
+        at org.apache.spark.rpc.netty.Inbox.$anonfun$process$1(Inbox.scala:103)
+        at org.apache.spark.rpc.netty.Inbox.safelyCall(Inbox.scala:213)
+        at org.apache.spark.rpc.netty.Inbox.process(Inbox.scala:100)
+        at org.apache.spark.rpc.netty.MessageLoop.org$apache$spark$rpc$netty$MessageLoop$$receiveLoop(MessageLoop.scala:75)
+        at org.apache.spark.rpc.netty.MessageLoop$$anon$1.run(MessageLoop.scala:41)
+        ... 3 more
+24/02/27 19:34:07 WARN BlockManagerMasterEndpoint: Error trying to remove shuffle 11. The executor driver may have been lost.
+org.apache.spark.rpc.RpcTimeoutException: Cannot receive any reply from i40vsim03.is.ipd.kit.edu:36469 in 120 seconds. This timeout is controlled by spark.rpc.askTimeout
+        at org.apache.spark.rpc.RpcTimeout.org$apache$spark$rpc$RpcTimeout$$createRpcTimeoutException(RpcTimeout.scala:47)
+        at org.apache.spark.rpc.RpcTimeout$$anonfun$addMessageIfTimeout$1.applyOrElse(RpcTimeout.scala:62)
+        at org.apache.spark.rpc.RpcTimeout$$anonfun$addMessageIfTimeout$1.applyOrElse(RpcTimeout.scala:58)
+        at scala.runtime.AbstractPartialFunction.apply(AbstractPartialFunction.scala:38)
+        at scala.util.Failure.recover(Try.scala:234)
+        at scala.concurrent.Future.$anonfun$recover$1(Future.scala:395)
+        at scala.concurrent.impl.Promise.liftedTree1$1(Promise.scala:33)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at org.apache.spark.util.ThreadUtils$$anon$1.execute(ThreadUtils.scala:99)
+        at scala.concurrent.impl.ExecutionContextImpl$$anon$4.execute(ExecutionContextImpl.scala:138)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.complete(Promise.scala:53)
+        at scala.concurrent.Promise.complete$(Promise.scala:52)
+        at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:187)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at scala.concurrent.BatchingExecutor$Batch.processBatch$1(BatchingExecutor.scala:67)
+        at scala.concurrent.BatchingExecutor$Batch.$anonfun$run$1(BatchingExecutor.scala:82)
+        at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+        at scala.concurrent.BlockContext$.withBlockContext(BlockContext.scala:85)
+        at scala.concurrent.BatchingExecutor$Batch.run(BatchingExecutor.scala:59)
+        at scala.concurrent.Future$InternalCallbackExecutor$.unbatchedExecute(Future.scala:875)
+        at scala.concurrent.BatchingExecutor.execute(BatchingExecutor.scala:110)
+        at scala.concurrent.BatchingExecutor.execute$(BatchingExecutor.scala:107)
+        at scala.concurrent.Future$InternalCallbackExecutor$.execute(Future.scala:873)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.tryFailure(Promise.scala:112)
+        at scala.concurrent.Promise.tryFailure$(Promise.scala:112)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryFailure(Promise.scala:187)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.org$apache$spark$rpc$netty$NettyRpcEnv$$onFailure$1(NettyRpcEnv.scala:214)
+        at org.apache.spark.rpc.netty.NettyRpcEnv$$anon$1.run(NettyRpcEnv.scala:264)
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:180)
+        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+        at java.lang.Thread.run(Thread.java:748)
+Caused by: java.util.concurrent.TimeoutException: Cannot receive any reply from i40vsim03.is.ipd.kit.edu:36469 in 120 seconds
+        at org.apache.spark.rpc.netty.NettyRpcEnv$$anon$1.run(NettyRpcEnv.scala:265)
+        ... 7 more
+24/02/27 19:34:07 ERROR BlockManagerMasterEndpoint: Fail to know the executor driver is alive or not.
+org.apache.spark.SparkException: Exception thrown in awaitResult:
+        at org.apache.spark.util.SparkThreadUtils$.awaitResult(SparkThreadUtils.scala:56)
+        at org.apache.spark.util.ThreadUtils$.awaitResult(ThreadUtils.scala:310)
+        at org.apache.spark.rpc.RpcTimeout.awaitResult(RpcTimeout.scala:75)
+        at org.apache.spark.rpc.RpcEnv.setupEndpointRefByURI(RpcEnv.scala:102)
+        at org.apache.spark.rpc.RpcEnv.setupEndpointRef(RpcEnv.scala:110)
+        at org.apache.spark.util.RpcUtils$.makeDriverRef(RpcUtils.scala:36)
+        at org.apache.spark.storage.BlockManagerMasterEndpoint.driverEndpoint$lzycompute(BlockManagerMasterEndpoint.scala:124)
+        at org.apache.spark.storage.BlockManagerMasterEndpoint.org$apache$spark$storage$BlockManagerMasterEndpoint$$driverEndpoint(BlockManagerMasterEndpoint.scala:123)
+        at org.apache.spark.storage.BlockManagerMasterEndpoint$$anonfun$handleBlockRemovalFailure$1.applyOrElse(BlockManagerMasterEndpoint.scala:317)
+        at org.apache.spark.storage.BlockManagerMasterEndpoint$$anonfun$handleBlockRemovalFailure$1.applyOrElse(BlockManagerMasterEndpoint.scala:306)
+        at scala.runtime.AbstractPartialFunction.apply(AbstractPartialFunction.scala:38)
+        at scala.util.Failure.recover(Try.scala:234)
+        at scala.concurrent.Future.$anonfun$recover$1(Future.scala:395)
+        at scala.concurrent.impl.Promise.liftedTree1$1(Promise.scala:33)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+        at java.lang.Thread.run(Thread.java:748)
+Caused by: org.apache.spark.rpc.RpcEndpointNotFoundException: Cannot find endpoint: spark://CoarseGrainedScheduler@i40vsim03.is.ipd.kit.edu:36469
+        at org.apache.spark.rpc.netty.NettyRpcEnv.$anonfun$asyncSetupEndpointRefByURI$1(NettyRpcEnv.scala:148)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.$anonfun$asyncSetupEndpointRefByURI$1$adapted(NettyRpcEnv.scala:144)
+        at scala.concurrent.Future.$anonfun$flatMap$1(Future.scala:307)
+        at scala.concurrent.impl.Promise.$anonfun$transformWith$1(Promise.scala:41)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at org.apache.spark.util.ThreadUtils$$anon$1.execute(ThreadUtils.scala:99)
+        at scala.concurrent.impl.ExecutionContextImpl$$anon$4.execute(ExecutionContextImpl.scala:138)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.complete(Promise.scala:53)
+        at scala.concurrent.Promise.complete$(Promise.scala:52)
+        at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:187)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at org.apache.spark.util.ThreadUtils$$anon$1.execute(ThreadUtils.scala:99)
+        at scala.concurrent.impl.ExecutionContextImpl$$anon$4.execute(ExecutionContextImpl.scala:138)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.complete(Promise.scala:53)
+        at scala.concurrent.Promise.complete$(Promise.scala:52)
+        at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:187)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at scala.concurrent.BatchingExecutor$Batch.processBatch$1(BatchingExecutor.scala:67)
+        at scala.concurrent.BatchingExecutor$Batch.$anonfun$run$1(BatchingExecutor.scala:82)
+        at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+        at scala.concurrent.BlockContext$.withBlockContext(BlockContext.scala:85)
+        at scala.concurrent.BatchingExecutor$Batch.run(BatchingExecutor.scala:59)
+        at scala.concurrent.Future$InternalCallbackExecutor$.unbatchedExecute(Future.scala:875)
+        at scala.concurrent.BatchingExecutor.execute(BatchingExecutor.scala:110)
+        at scala.concurrent.BatchingExecutor.execute$(BatchingExecutor.scala:107)
+        at scala.concurrent.Future$InternalCallbackExecutor$.execute(Future.scala:873)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.trySuccess(Promise.scala:94)
+        at scala.concurrent.Promise.trySuccess$(Promise.scala:94)
+        at scala.concurrent.impl.Promise$DefaultPromise.trySuccess(Promise.scala:187)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.onSuccess$1(NettyRpcEnv.scala:225)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.$anonfun$askAbortable$5(NettyRpcEnv.scala:239)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.$anonfun$askAbortable$5$adapted(NettyRpcEnv.scala:238)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at org.apache.spark.util.ThreadUtils$$anon$1.execute(ThreadUtils.scala:99)
+        at scala.concurrent.impl.ExecutionContextImpl$$anon$4.execute(ExecutionContextImpl.scala:138)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.complete(Promise.scala:53)
+        at scala.concurrent.Promise.complete$(Promise.scala:52)
+        at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:187)
+        at scala.concurrent.Promise.success(Promise.scala:86)
+        at scala.concurrent.Promise.success$(Promise.scala:86)
+        at scala.concurrent.impl.Promise$DefaultPromise.success(Promise.scala:187)
+        at org.apache.spark.rpc.netty.LocalNettyRpcCallContext.send(NettyRpcCallContext.scala:50)
+        at org.apache.spark.rpc.netty.NettyRpcCallContext.reply(NettyRpcCallContext.scala:32)
+        at org.apache.spark.rpc.netty.RpcEndpointVerifier$$anonfun$receiveAndReply$1.applyOrElse(RpcEndpointVerifier.scala:31)
+        at org.apache.spark.rpc.netty.Inbox.$anonfun$process$1(Inbox.scala:103)
+        at org.apache.spark.rpc.netty.Inbox.safelyCall(Inbox.scala:213)
+        at org.apache.spark.rpc.netty.Inbox.process(Inbox.scala:100)
+        at org.apache.spark.rpc.netty.MessageLoop.org$apache$spark$rpc$netty$MessageLoop$$receiveLoop(MessageLoop.scala:75)
+        at org.apache.spark.rpc.netty.MessageLoop$$anon$1.run(MessageLoop.scala:41)
+        ... 3 more
+24/02/27 19:34:07 WARN BlockManagerMasterEndpoint: Error trying to remove shuffle 12. The executor driver may have been lost.
+org.apache.spark.rpc.RpcTimeoutException: Cannot receive any reply from i40vsim03.is.ipd.kit.edu:36469 in 120 seconds. This timeout is controlled by spark.rpc.askTimeout
+        at org.apache.spark.rpc.RpcTimeout.org$apache$spark$rpc$RpcTimeout$$createRpcTimeoutException(RpcTimeout.scala:47)
+        at org.apache.spark.rpc.RpcTimeout$$anonfun$addMessageIfTimeout$1.applyOrElse(RpcTimeout.scala:62)
+        at org.apache.spark.rpc.RpcTimeout$$anonfun$addMessageIfTimeout$1.applyOrElse(RpcTimeout.scala:58)
+        at scala.runtime.AbstractPartialFunction.apply(AbstractPartialFunction.scala:38)
+        at scala.util.Failure.recover(Try.scala:234)
+        at scala.concurrent.Future.$anonfun$recover$1(Future.scala:395)
+        at scala.concurrent.impl.Promise.liftedTree1$1(Promise.scala:33)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at org.apache.spark.util.ThreadUtils$$anon$1.execute(ThreadUtils.scala:99)
+        at scala.concurrent.impl.ExecutionContextImpl$$anon$4.execute(ExecutionContextImpl.scala:138)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.complete(Promise.scala:53)
+        at scala.concurrent.Promise.complete$(Promise.scala:52)
+        at scala.concurrent.impl.Promise$DefaultPromise.complete(Promise.scala:187)
+        at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+        at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+        at scala.concurrent.BatchingExecutor$Batch.processBatch$1(BatchingExecutor.scala:67)
+        at scala.concurrent.BatchingExecutor$Batch.$anonfun$run$1(BatchingExecutor.scala:82)
+        at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+        at scala.concurrent.BlockContext$.withBlockContext(BlockContext.scala:85)
+        at scala.concurrent.BatchingExecutor$Batch.run(BatchingExecutor.scala:59)
+        at scala.concurrent.Future$InternalCallbackExecutor$.unbatchedExecute(Future.scala:875)
+        at scala.concurrent.BatchingExecutor.execute(BatchingExecutor.scala:110)
+        at scala.concurrent.BatchingExecutor.execute$(BatchingExecutor.scala:107)
+        at scala.concurrent.Future$InternalCallbackExecutor$.execute(Future.scala:873)
+        at scala.concurrent.impl.CallbackRunnable.executeWithValue(Promise.scala:72)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.$anonfun$tryComplete$1$adapted(Promise.scala:288)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryComplete(Promise.scala:288)
+        at scala.concurrent.Promise.tryFailure(Promise.scala:112)
+        at scala.concurrent.Promise.tryFailure$(Promise.scala:112)
+        at scala.concurrent.impl.Promise$DefaultPromise.tryFailure(Promise.scala:187)
+        at org.apache.spark.rpc.netty.NettyRpcEnv.org$apache$spark$rpc$netty$NettyRpcEnv$$onFailure$1(NettyRpcEnv.scala:214)
+        at org.apache.spark.rpc.netty.NettyRpcEnv$$anon$1.run(NettyRpcEnv.scala:264)
+        at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:180)
+        at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:293)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+        at java.lang.Thread.run(Thread.java:748)
+Caused by: java.util.concurrent.TimeoutException: Cannot receive any reply from i40vsim03.is.ipd.kit.edu:36469 in 120 seconds
+        at org.apache.spark.rpc.netty.NettyRpcEnv$$anon$1.run(NettyRpcEnv.scala:265)
+        ... 7 more
++-----------+--------------------+
+|    NgramId|         ZScoreArray|
++-----------+--------------------+
+|34359738526|[-1.2996261789515...|
+|34359739005|[-1.1172332357319...|
+|34359739425|[-1.1473771375968...|
+|34359741046|[-1.6338004756971...|
+|34359741286|[-1.3306267525720...|
+|34359741781|[-0.9581223287448...|
+|34359742241|[-1.5099476746157...|
+|34359743248|[-1.6004355405779...|
+|34359743676|[-1.4145172205483...|
+|34359743960|[-0.8290354311605...|
+|34359744470|[-1.4717882693043...|
+|34359744530|[-1.5950898101635...|
+|34359744870|[-1.4500068150299...|
+|34359745820|[-1.0952934320735...|
+|34359745832|[-1.3799751558772...|
+|34359747038|[-1.4237262279460...|
+|34359748576|[-1.2525554238954...|
+|34359748722|[-1.6233637635221...|
+|34359750775|[-1.3041730054458...|
+|34359751839|[-0.7435206885385...|
++-----------+--------------------+
+only showing top 20 rows
+
++-----------+--------------------+
+|    NgramId|      ZScore_N_Array|
++-----------+--------------------+
+|34359738526|[-0.6224918480070...|
+|34359739005|[-0.7555282965377...|
+|34359739425|[-0.3869296424399...|
+|34359741046|[-0.2776187487364...|
+|34359741286|[-0.7914359819813...|
+|34359741781|[-0.7694910250797...|
+|34359742241|[-0.7037757670076...|
+|34359743248|[-0.2318850320752...|
+|34359743676|[-0.4251471662481...|
+|34359743960|[-0.2748063588478...|
+|34359744470|[-0.8483162515368...|
+|34359744530|[-0.3208727090725...|
+|34359744870|[-0.3185217145940...|
+|34359745820|[-0.3910019061025...|
+|34359745832|[-0.3811607708836...|
+|34359747038|[-0.2562707649672...|
+|34359748576|[-0.2492320627293...|
+|34359748722|[-0.3976190952635...|
+|34359750775|[-0.5263661942810...|
+|34359751839|[-0.4751856556647...|
++-----------+--------------------+
+only showing top 20 rows
+
+2395.138773202896
+z time
++-----------+------------------+
+|    NgramId|              rmse|
++-----------+------------------+
+|34359738526|0.9452136301064087|
+|34359739005|0.8988081672766634|
+|34359739425| 1.029302251280972|
+|34359741046| 1.315175639717218|
+|34359741286|0.7969746509563677|
+|34359741781|0.4128039640091502|
+|34359742241| 0.968079534348925|
+|34359743248| 1.287189318964092|
+|34359743676| 1.177535338613944|
+|34359743960|1.3454874238509895|
+|34359744470| 1.208665539419925|
+|34359744530|1.2566135620754653|
+|34359744870|1.1685266019149878|
+|34359745820|1.0970733165322433|
+|34359745832|1.1777904677284412|
+|34359747038|1.1533875766771722|
+|34359748576| 1.275408765063643|
+|34359748722|1.2511905871641866|
+|34359750775|1.2299042341772275|
+|34359751839|1.0345576974140407|
++-----------+------------------+
+only showing top 20 rows
+
+1.845850944519043
+rmse time
+1.6361730098724365
+pandas time muss < 15 min
+1.5329689979553223
+collect time muss < 15 min
+24/02/27 19:45:06 WARN NettyRpcEnv: Ignored message: true
+24/02/27 19:45:06 WARN NettyRpcEnv: Ignored message: true
+
+
+

@@ -1,0 +1,22 @@
+
+j: 0
+maxerror_observed: 3.5743731009334546e+37
+RMSE: 2.5512002967917813e+36
+MAE: 2.0960281512378965e+35
+Shape of time series: (1, 201)
+Size of compressed file: 712 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/zscore_np_20k.bsc.recon.npy
+9
+---------------------------------------------
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/zscore_np_20k.bsc.tar compressed 10240 into 338 in 0.016 seconds.
+j: 0
+maxerror_observed: 7.731791670554895
+RMSE: 1.5387179906665591
+MAE: 0.9747565595202392
+Shape of time series: (1, 201)
+Size of compressed file: 338 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/zscore_np_20k.bsc.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
