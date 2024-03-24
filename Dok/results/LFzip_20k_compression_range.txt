@@ -1,0 +1,213 @@
+LFzip:
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 0.19
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4352000 into 1625602 in 0.477 seconds.
+j: 0
+maxerror_observed: 0.189999
+RMSE: 0.10322128
+MAE: 0.08575519
+Shape of time series: (1, 2009799)
+Size of compressed file: 1625602 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 0.38
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4280320 into 1392408 in 0.363 seconds.
+j: 0
+maxerror_observed: 0.37999928
+RMSE: 0.20305023
+MAE: 0.16819192
+Shape of time series: (1, 2009799)
+Size of compressed file: 1392408 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 0.58
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4249600 into 1257062 in 0.413 seconds.
+j: 0
+maxerror_observed: 0.57999915
+RMSE: 0.30676335
+MAE: 0.2535585
+Shape of time series: (1, 2009799)
+Size of compressed file: 1257062 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 0.78
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4229120 into 1172614 in 0.361 seconds.
+j: 0
+maxerror_observed: 0.7799988
+RMSE: 0.40936926
+MAE: 0.33789465
+Shape of time series: (1, 2009799)
+Size of compressed file: 1172614 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 0.96
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4208640 into 1115480 in 0.370 seconds.
+j: 0
+maxerror_observed: 0.95999867
+RMSE: 0.5004948
+MAE: 0.41212872
+Shape of time series: (1, 2009799)
+Size of compressed file: 1115480 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 1.16
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4198400 into 1064422 in 0.355 seconds.
+j: 0
+maxerror_observed: 1.1599978
+RMSE: 0.60172164
+MAE: 0.4948699
+Shape of time series: (1, 2009799)
+Size of compressed file: 1064422 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 1.36
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4188160 into 1022444 in 0.435 seconds.
+j: 0
+maxerror_observed: 1.3599986
+RMSE: 0.70161164
+MAE: 0.57622814
+Shape of time series: (1, 2009799)
+Size of compressed file: 1022444 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 1.56
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4177920 into 987592 in 0.402 seconds.
+j: 0
+maxerror_observed: 1.5599988
+RMSE: 0.8017247
+MAE: 0.65774596
+Shape of time series: (1, 2009799)
+Size of compressed file: 987592 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 1.76
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4177920 into 961664 in 0.407 seconds.
+j: 0
+maxerror_observed: 1.7599965
+RMSE: 0.8995311
+MAE: 0.73665076
+Shape of time series: (1, 2009799)
+Size of compressed file: 961664 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 1.965
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4167680 into 935298 in 0.403 seconds.
+j: 0
+maxerror_observed: 1.9649961
+RMSE: 1.0013268
+MAE: 0.81882906
+Shape of time series: (1, 2009799)
+Size of compressed file: 935298 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 2.18
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4157440 into 906928 in 0.455 seconds.
+j: 0
+maxerror_observed: 2.1799984
+RMSE: 1.1068743
+MAE: 0.90397394
+Shape of time series: (1, 2009799)
+Size of compressed file: 906928 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 2.38
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4157440 into 893506 in 0.399 seconds.
+j: 0
+maxerror_observed: 2.3799956
+RMSE: 1.2028335
+MAE: 0.9802227
+Shape of time series: (1, 2009799)
+Size of compressed file: 893506 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 2.6
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4157440 into 873618 in 0.377 seconds.
+j: 0
+maxerror_observed: 2.5999925
+RMSE: 1.308849
+MAE: 1.0643555
+Shape of time series: (1, 2009799)
+Size of compressed file: 873618 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$ lfzip-nlms -m c -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/lzip_out.out -a 2.8
+float64
+This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.
+Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.
+
+/mnt/simhomes/binzc/results/lzip_out.out.tar compressed 4147200 into 856890 in 0.379 seconds.
+j: 0
+maxerror_observed: 2.7999988
+RMSE: 1.405449
+MAE: 1.1416333
+Shape of time series: (1, 2009799)
+Size of compressed file: 856890 bytes
+Reconstruction written to: /mnt/simhomes/binzc/results/lzip_out.out.recon.npy
+(lfzip_env) (env) binzc@vSim03:/mnt/simhomes/binzc/BA/LFZip$
+
+

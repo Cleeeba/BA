@@ -163,10 +163,56 @@ def load_ngramTable():
     
     return result
 cl = CorpusLoader('/mnt/simhomes/binzc/', spark)
-
+from pyspark.sql.functions import coalesce
 cl.load()
 ngram = load_ngramTable()      
 calculated_df = spark.read.parquet("/mnt/simhomes/binzc/parquets/full_final_df2").select("NgramId","rmse","Coef_R", "Coef_L","ic").repartition(4*128, "NgramId")
+level2 = spark.read.parquet("/mnt/simhomes/binzc/parquets/level2_table").select("NgramId","rmse","Coef_R", "Coef_L","ic")
+level3 = spark.read.parquet("/mnt/simhomes/binzc/parquets/level3_table").select("NgramId","rmse","Coef_R", "Coef_L","ic")
+level4 = spark.read.parquet("/mnt/simhomes/binzc/parquets/level4_table").select("NgramId","rmse","Coef_R", "Coef_L","ic")
+
+joined_df = calculated_df.join(level2.withColumnRenamed("rmse", "rmse_level2")
+                                    .withColumnRenamed("Coef_R", "Coef_R_level2")
+                                    .withColumnRenamed("Coef_L", "Coef_L_level2")
+                                    .withColumnRenamed("ic", "ic_level2"), "NgramId", "left_outer") \
+                         .join(level3.withColumnRenamed("rmse", "rmse_level3")
+                                    .withColumnRenamed("Coef_R", "Coef_R_level3")
+                                    .withColumnRenamed("Coef_L", "Coef_L_level3")
+                                    .withColumnRenamed("ic", "ic_level3"), "NgramId", "left_outer") \
+                         .join(level4.withColumnRenamed("rmse", "rmse_level4")
+                                    .withColumnRenamed("Coef_R", "Coef_R_level4")
+                                    .withColumnRenamed("Coef_L", "Coef_L_level4")
+                                    .withColumnRenamed("ic", "ic_level4"), "NgramId", "left_outer")
+
+joined_df = joined_df.withColumn("rmse", when(col("rmse_level4").isNotNull(), col("rmse_level4"))
+                                       .when(col("rmse_level3").isNotNull(), col("rmse_level3"))
+                                       .when(col("rmse_level2").isNotNull(), col("rmse_level2"))
+                                       .otherwise(col("rmse"))) \
+                     .withColumn("Coef_R", when(col("Coef_R_level4").isNotNull(), col("Coef_R_level4"))
+                                          .when(col("Coef_R_level3").isNotNull(), col("Coef_R_level3"))
+                                          .when(col("Coef_R_level2").isNotNull(), col("Coef_R_level2"))
+                                          .otherwise(col("Coef_R"))) \
+                     .withColumn("Coef_L", when(col("Coef_L_level4").isNotNull(), col("Coef_L_level4"))
+                                          .when(col("Coef_L_level3").isNotNull(), col("Coef_L_level3"))
+                                          .when(col("Coef_L_level2").isNotNull(), col("Coef_L_level2"))
+                                          .otherwise(col("Coef_L"))) \
+                     .withColumn("ic", when(col("ic_level4").isNotNull(), col("ic_level4"))
+                                       .when(col("ic_level3").isNotNull(), col("ic_level3"))
+                                       .when(col("ic_level2").isNotNull(), col("ic_level2"))
+                                       .otherwise(col("ic")))
+
+# Entfernen der Spalten mit Level-Präfixen
+joined_df = joined_df.drop("rmse_level2", "rmse_level3", "rmse_level4",
+                           "Coef_R_level2", "Coef_R_level3", "Coef_R_level4",
+                           "Coef_L_level2", "Coef_L_level3", "Coef_L_level4",
+                           "ic_level2", "ic_level3", "ic_level4")
+
+# Anzeige der Ergebnisse
+joined_df.select("NgramId","rmse","Coef_R", "Coef_L","ic").show()
+print(calculated_df.count())
+print(joined_df.count())
+calculated_df = joined_df
+calculated_df.write.parquet("/mnt/simhomes/binzc/parquets/full_error_table" , mode= 'overwrite')
 data_parquet = cl._CorpusLoader__data_df.withColumn("MapOfString", col("Frequency").cast("string"))
 #data_parquet.select("NgramId", "MapOfString").write.mode('overwrite').csv("/mnt/simhomes/binzc/results/original_data_csv" , mode= 'overwrite')
     

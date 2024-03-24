@@ -1,0 +1,99 @@
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 14.1429
+compression ratio = 4.94
+compression time = 0.196093
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+compression ratio = 4.942855
+decompression time = 0.124896 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 28.2858
+compression ratio = 6.02
+compression time = 0.366051
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+compression ratio = 6.018615
+decompression time = 0.282167 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 42.4287
+compression ratio = 6.76
+compression time = 0.391467
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+compression ratio = 6.757509
+decompression time = 0.275558 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 56.5716
+compression ratio = 7.41
+compression time = 0.382632
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+compression ratio = 7.410408
+decompression time = 0.276604 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 70.7145
+compression ratio = 7.98
+compression time = 0.361887
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+compression ratio = 7.979893
+decompression time = 0.269023 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 84.8574
+compression ratio = 8.04
+compression time = 0.185722
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+compression ratio = 8.039256
+decompression time = 0.104637 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 99.0003
+compression ratio = 8.60
+compression time = 0.186201
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+compression ratio = 8.597303
+decompression time = 0.102939 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 113.1432
+compression ratio = 9.16
+compression time = 0.199135
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+compression ratio = 9.164897
+decompression time = 0.102245 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 127.2861
+compression ratio = 9.48
+compression time = 0.183053
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+^[[Acompression ratio = 9.483953
+decompression time = 0.104657 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 141.429
+compression ratio = 10.38
+compression time = 0.383344
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+compression ratio = 10.378004
+decompression time = 0.249847 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 155.5719
+compression ratio = 10.43
+compression time = 0.176739
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+compression ratio = 10.428724
+decompression time = 0.096431 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 169.7148
+compression ratio = 11.39
+compression time = 0.352692
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+^[[Acompression ratio = 11.385520
+decompression time = 0.227637 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 183.8577
+compression ratio = 11.87
+compression time = 0.347975
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+compression ratio = 11.874350
+decompression time = 0.225114 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$ ./sz3 -f -i /mnt/simhomes/binzc/results/zscore_np_20k.npy -o /mnt/simhomes/binzc/results/zscore_np_20k.npy.out -2 19998 201 -M NORM 198.0006
+compression ratio = 12.29
+compression time = 0.357086
+compressed data file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.sz.tmp
+compression ratio = 12.290657
+decompression time = 0.234814 seconds.
+decompressed file = /mnt/simhomes/binzc/results/zscore_np_20k.npy.out
+(env) binzc@vSim03:/mnt/simhomes/binzc/BA/SZ3/tools/sz3$

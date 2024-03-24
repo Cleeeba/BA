@@ -5,19 +5,19 @@ import pyspark.pandas as ps
 import pandas as pd
 import statsmodels.api as sm
 from pyspark.sql.types import *
-from pyspark.sql.functions import countDistinct
+
 spark = SparkSession.builder.appName('CorpusLoader').master('local[*]')\
 .config('spark.driver.memory','100G') \
     .config("spark.sql.mapKeyDedupPolicy","LAST_WIN") \
     .config("spark.sql.adaptive.optimizeSkewedJoin.enabled", "true") \
     .config("spark.local.dir", "/mnt/simhomes/binzc/sparktemp") \
-    .config("spark.executor.memory", "4g")\
+    .config("spark.executor.memory", "10g")\
     .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")\
     .config("spark.default.parallelism", "96")\
         .getOrCreate()
     
     
-
+from pyspark.sql.functions import countDistinct
 import os
 import seaborn as sns
 from pyspark.sql.types import IntegerType
@@ -33,7 +33,6 @@ intercept = "ic"
 y_column = 'Frequency_N'
 x_columns = ['Frequency_L', 'Frequency_R']
 schema = StructType([StructField('NgramId', LongType(), True), StructField('Frequency_L', DoubleType(), False), StructField('Frequency_R', DoubleType(), False),StructField('ic',  DoubleType(), True)])
-
 
 class CorpusLoader:
 
@@ -148,22 +147,18 @@ def load_ngramTable():
     data_parquet = cl._CorpusLoader__data_df
     
     #token_array_df_cl = token_array_df_cl.join(token_df, on = "TokenId")
-    # Baue NgramId mit child tabelle
-    
-    
+    # Baue NgramId mit child tabell
     #token_array_df = token_array_df_cl.orderBy('NgramId', 'Position').groupBy('NgramId').agg(collect_list('TokenId').alias('Tokens'))
     
     df = array_df.withColumnRenamed('Tokens', 'Ngram').withColumn('Length', size('Ngram')).where('Length > 1')
     df = df.withColumn('LeftChildToken', slice(df.Ngram, 1, df.Length-1))
     df = df.withColumn('RightChildToken', slice(df.Ngram, 2,df.Length-1))
-
     
     result = (df.withColumnRenamed("Frequency","Frequency_N").alias("og")
             .join(array_df.withColumnRenamed('NgramId', 'LeftChildNgramId').withColumnRenamed('Frequency', 'Frequency_L').alias("dataL"),(col("og.LeftChildToken") == col("dataL.Tokens")))
             .join(array_df.withColumnRenamed('NgramId', 'RightChildNgramId').withColumnRenamed('Frequency', 'Frequency_R').alias("dataR"), (col("og.RightChildToken") == col("dataR.Tokens")))
             .select(col("og.NgramId").alias("NgramId"), "Frequency_N","Frequency_L", "Frequency_R"))
     return result
- 
 
 
 def explode_and_filter(df, frequency_col, dict_years):
@@ -193,21 +188,41 @@ def new_freq_df(ngram_table):
     return df
 
 
-def freq_df(ngram_table):
+def freq_df_map(ngram_table):
     
     year_df = spark.createDataFrame(list(range(1800, 2001)), schema=IntegerType())
     df = ngram_table.crossJoin(year_df).withColumnRenamed('value', 'Year')
     
     df = df.withColumn("TrueFreq", when(col("Frequency_N").getItem(df.Year).isNotNull(),col("Frequency_N").getItem(df.Year)).otherwise(lit(0)))
     df = df.select("NgramId","TrueFreq", "Frequency_L", "Frequency_R",'Year').withColumnRenamed('TrueFreq', 'Frequency_N')
+
     df = df.withColumn("TrueFreq", when(col("Frequency_L").getItem(df.Year).isNotNull(),col("Frequency_L").getItem(df.Year)).otherwise(lit(0)))
     df = df.select("NgramId","Frequency_N", "TrueFreq", "Frequency_R" ,'Year').withColumnRenamed('TrueFreq', 'Frequency_L')
     df = df.withColumn("TrueFreq", when(col("Frequency_R").getItem(df.Year).isNotNull(),col("Frequency_R").getItem(df.Year)).otherwise(lit(0)))
     df = df.select("NgramId","Frequency_N", "Frequency_L", "TrueFreq", 'Year').withColumnRenamed('TrueFreq', 'Frequency_R')
     df_1 = df.select("NgramId","Frequency_N","Frequency_L","Frequency_R" )
-    
     return df_1
 
+def freq_df_array(ngram_table):
+    
+    ngram_tableN = ngram_table.withColumn("Frequency_N_new", explode("Frequency_N")).select("NgramId","Frequency_N_new")
+    ngram_tableR = ngram_table.withColumn("Frequency_R_new", explode("Frequency_R")).select("NgramId","Frequency_R_new")
+    ngram_tableL = ngram_table.withColumn("Frequency_L_new", explode("Frequency_L")).select("NgramId","Frequency_L_new")
+    ngram_table = ngram_tableN.join(ngram_tableR, on ="NgramId").join(ngram_tableL, on ="NgramId").withColumnRenamed('Frequency_R_new', 'Frequency_R').withColumnRenamed('Frequency_N_new', 'Frequency_N').withColumnRenamed('Frequency_L_new', 'Frequency_L')
+    return ngram_table
+
+def explode_arrays(ngram_table):
+    # Explodiere die Arrays an derselben Position
+    ngram_table = ngram_table.select("NgramId","Frequency_R","Frequency_L", posexplode("Frequency_N").alias("pos_N", "Frequency_N_new"))
+    ngram_table = ngram_table.select("NgramId","Frequency_N_new","pos_N","Frequency_L", posexplode("Frequency_R").alias("pos_R", "Frequency_R_new"))
+    ngram_table = ngram_table.select("NgramId","Frequency_N_new","pos_N","pos_R","Frequency_R_new", posexplode("Frequency_L").alias("pos_L", "Frequency_L_new"))
+    # Filtere die Zeilen, in denen die Positionen gleich sind
+    ngram_table_filtered = ngram_table.filter((col("pos_N") == col("pos_R")) & (col("pos_N") == col("pos_L")))
+    ngram_table = ngram_table_filtered.withColumnRenamed('Frequency_R_new', 'Frequency_R').withColumnRenamed('Frequency_N_new', 'Frequency_N').withColumnRenamed('Frequency_L_new', 'Frequency_L')
+    # Entferne die Positionsspalten
+
+    
+    return ngram_table
 
 def ols(pdf):
     group_key = pdf[group_column].iloc[0]
@@ -215,7 +230,7 @@ def ols(pdf):
     X = pdf[x_columns]
     X = sm.add_constant(X)
     model = sm.OLS(y, X).fit()
-    return pd.DataFrame([[group_key] + [model.params[i] for i in x_columns] + [model.params['const']]], columns=[group_column] + x_columns + [intercept]) 
+    return pd.DataFrame([[group_key] + [model.params[i] for i in x_columns] + [model.params['const']]], columns=[group_column] + x_columns + [intercept])
 
 def build_aprox(df, beta):
     beta = beta.withColumnRenamed("Frequency_L","Coef_L").withColumnRenamed("Frequency_R","Coef_R")
@@ -229,6 +244,17 @@ def build_aprox(df, beta):
     full_df = result_df.withColumn("Aprox", expr("transform(L_multi, (x, i) -> x + R_multi[i])"))
     return full_df.select("NgramId","Aprox", "Coef_R", "Coef_L","ic")
 
+def build_aprox_array(df, beta):
+    beta = beta.withColumnRenamed("Frequency_L","Coef_L").withColumnRenamed("Frequency_R","Coef_R")
+    df_1= df.groupby(group_column).agg(collect_list("Frequency_N").alias("Frequency_N"),collect_list("Frequency_L").alias("Frequency_L"),collect_list("Frequency_R").alias("Frequency_R"))
+
+    df = beta.join(df_1, on= "NgramId")
+    result_df = df.withColumn("L_multi", expr("transform(Frequency_L, x -> x * Coef_L + ic)"))
+    result_df = result_df.withColumn("R_multi", expr("transform(Frequency_R, x -> x * Coef_R)"))
+
+
+    full_df = result_df.withColumn("Aprox", expr("transform(L_multi, (x, i) -> x + R_multi[i])"))
+    return full_df.select("NgramId","Aprox", "Coef_R", "Coef_L","ic")
 def Zscore_calc(df):
     result_df = df.select("NgramId","Aprox", explode("Aprox").alias("exploded_aprox"))
 
@@ -257,13 +283,12 @@ def Zscore_calc(df):
 def Sum_no_zero(df):
     sum_df = df.select(
     "NgramId",explode('Frequency_N').alias("key", "value")).groupBy("NgramId").sum("value")\
-        .select("NgramId","sum(value)").withColumnRenamed("sum(value)", "Sum")   
+        .select("NgramId","sum(value)").withColumnRenamed("sum(value)", "Sum")
     return sum_df
 
 def RMSE(ZScore_N_df,ZScore_df):
 
     rmse_df = ZScore_N_df.join(ZScore_df, on="NgramId")
-
     rmse_df = rmse_df.withColumn("zip", arrays_zip("ZScoreArray", "ZScore_N_Array"))\
         .withColumn("zip", explode("zip"))\
         .select("NgramId", col("zip.ZScoreArray").alias("ZScoreArray"), col("zip.ZScore_N_Array").alias("ZScore_N_Array"))
@@ -272,6 +297,7 @@ def RMSE(ZScore_N_df,ZScore_df):
     .agg(
         sqrt(avg(pow(col("ZScoreArray") - col("ZScore_N_Array"), 2))).alias("rmse")))
     return rmse_stats
+
 
 def build_graph(final_df):
     line_plot = final_df.select("ZScore_N_Array", "ZScoreArray").first()
@@ -307,29 +333,41 @@ def build_graph(final_df):
     plt.clf()
     
 
-#ngram_table.write.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq", mode= 'overwrite'))
-#ngram_table = spark.read.parquet("/mnt/c/Users/bincl/BA-Thesis/Dataset/parquets_corpus/parquets/freq").limit(10)
+
+final = spark.read.parquet("/mnt/simhomes/binzc/parquets/full_final_df2").repartition(4*128, "NgramId")
+aprox = spark.read.parquet("/mnt/simhomes/binzc/parquets/aprox_level3_table").repartition(4*128, "NgramId")
+final.printSchema()
+#aprox.printSchema()
+data_parquet = cl._CorpusLoader__data_df
+token_array_df = cl._CorpusLoader__contains_df
+array_df = cl._CorpusLoader__array_df
+
+df = array_df.withColumnRenamed('Tokens', 'Ngram').withColumn('Length', size('Ngram')).where('Length > 1')
+df = df.withColumn('LeftChildToken', slice(df.Ngram, 1, df.Length-1))
+df = df.withColumn('RightChildToken', slice(df.Ngram, 2,df.Length-1))
+    
+result = (df.withColumnRenamed("Frequency","Frequency_N").alias("og")
+            .join(array_df.withColumnRenamed('NgramId', 'LeftChildNgramId').alias("dataL"),(col("og.LeftChildToken") == col("dataL.Tokens")))
+            .join(array_df.withColumnRenamed('NgramId', 'RightChildNgramId').alias("dataR"), (col("og.RightChildToken") == col("dataR.Tokens")))
+            .select(col("og.NgramId").alias("NgramId"), "LeftChildNgramId","RightChildNgramId"))
+
+ngram_table = (result
+                .join(final, on=("NgramId"))
+                .join(aprox, on=("NgramId")).alias("og").withColumnRenamed("Aprox","lost")
+                .join(aprox.alias("dataL"),(col("og.LeftChildNgramId") == col("dataL.NgramId"))).withColumnRenamed("Aprox","Frequency_L")
+                .join(aprox.alias("dataR"),(col("og.RightChildNgramId") == col("dataR.NgramId"))).withColumnRenamed("Aprox","Frequency_R")
+                .select(col("og.NgramId").alias("NgramId"),col("og.Frequency_N").alias("Frequency_N"),  "Frequency_L",  "Frequency_R",col("og.ic").alias("ic"),col("og.Coef_L").alias("Coef_L"),col("og.Coef_R").alias("Coef_R")))
+from pyspark.sql.window import Window
+from pyspark.sql.functions import first
+from pyspark.sql.functions import col, explode, posexplode
 
 
-#ngram_table = spark.read.parquet("/mnt/simhomes/binzc/data_transfer/freq_small")
-ngram_table             = load_ngramTable()
-ngram_table = ngram_table.repartition(6 * 128, col(group_column))
-#ngram_table.persist()
-sum_table = Sum_no_zero(ngram_table)
 
-#hoher loss
-#print("sum")
-#print(sum_table.count())
 
-freq_table              = freq_df(ngram_table)
-
-df = freq_table
+freq_table              = explode_arrays(ngram_table)
+df = freq_table.repartition(20*128, "NgramId")
 #beta = df.groupby(group_column).applyInPandas(ols_sk,schema= schema)
-
-#sehr großer verlust 70k verlust
 beta = df.groupby(group_column).applyInPandas(ols,schema= schema)
-#sehr großer verlust 70k verlust
-
 beta.drop("Frequency_N")
 
 
@@ -354,28 +392,26 @@ aprox_table = result_df.withColumn(
 
 group_column_multi = ["NgramId", "Coef_R", "Coef_L","ic"]
 aprox_group_table = aprox_table.groupBy(group_column_multi).agg(collect_list("Frequency_N").alias("Frequency_N"),collect_list("Aprox").alias("Aprox"))
-aprox_group_table.cache()
 params_df = aprox_group_table.select("NgramId", "Coef_R", "Coef_L","ic")
-
+aprox_group_table.cache()
 aprox_group_table = aprox_group_table.select("NgramId","Aprox","Frequency_N")
-aprox_group_table.write.parquet("/mnt/simhomes/binzc/parquets/aprox_tabel" , mode= 'overwrite')
+#aprox_group_table.cache()
+
+aprox_group_table.write.parquet("/mnt/simhomes/binzc/parquets/aprox_level4_table" , mode= 'overwrite')
 
 ZScore_df, ZScore_N_df  = Zscore_calc(aprox_group_table)
 
-
 rmse_table              = RMSE(ZScore_N_df,ZScore_df)
-#verliert etwas
+#print(rmse_table.count())
+levelTwoAprox = ZScore_df.join(ZScore_N_df, on="NgramId").join(rmse_table, on="NgramId").join(params_df, on="NgramId") 
+#print(levelTwoAprox.count())
 
-final  = sum_table.join(rmse_table, on="NgramId").join(ZScore_N_df,on="NgramId").join(ZScore_df,on="NgramId").join(params_df, on="NgramId")
-#verliert etwas
-
-calc_df= final.select("NgramId","Sum","rmse","ZScore_N_Array","ZScoreArray")
-
-write_df = final.select("NgramId","Sum","rmse","Coef_R", "Coef_L","ic","ZScore_N_Array","ZScoreArray")
-#rite_df.write.parquet("/mnt/simhomes/binzc/parquets/full_final_df2" , mode= 'overwrite')
-#verliert etwas
-
-build_graph(calc_df)
+levelTwoAprox.write.parquet("/mnt/simhomes/binzc/parquets/level4_table" , mode= 'overwrite')
+print(levelTwoAprox.count())
 
 
 
+
+
+
+#build_graph(calc_df)
